@@ -21,6 +21,7 @@ import com.bcdeproject.global.util.security.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -77,41 +78,56 @@ public class BoastPostServiceImpl implements BoastPostService{
         BoastPost post = postRepository.findById(id).orElseThrow(() ->
                 new BoastPostException(BoastPostExceptionType.POST_NOT_FOUND));
 
-        checkAuthority(post, BoastPostExceptionType.NOT_AUTHORITY_UPDATE_POST );
+        checkAuthority(post, BoastPostExceptionType.NOT_AUTHORITY_UPDATE_POST);
 
-        postUpdateDto.getTitle().ifPresent(post::updateTitle);
-        postUpdateDto.getContent().ifPresent(post::updateContent);
+        // 업데이트 요청에 타이틀이 있을 때 업데이트, 없으면 예외 반환(타이틀은 필수 -> 업데이트 하지 않으면 현재 내용 담아서 요청)
+        if(postUpdateDto.getTitle() != null) {
+            post.updateTitle(postUpdateDto.getTitle());
+        } else {
+            throw new BoastPostException(BoastPostExceptionType.UPDATE_POST_TITLE_NOT_FOUND);
+        }
+
+        // 업데이트 요청에 내용이 있을 때 업데이트, 없으면 예외 반환(내용은 필수 -> 업데이트 하지 않으면 현재 내용 담아서 요청)
+        if(postUpdateDto.getContent() != null) {
+            post.updateContent(postUpdateDto.getContent());
+        } else {
+            throw new BoastPostException(BoastPostExceptionType.UPDATE_POST_CONTENT_NOT_FOUND);
+        }
+
+        // 업데이트 요청에 해시태그가 있다면,
+        if(postUpdateDto.getHashTag() != null) {
+            List<BoastHashTag> hashTags = postUpdateDto.getHashTag();
+            // 기존 post 해시태그 있다면
+            if (post.getBoastHashTagList() != null) {
+                // 현재 post 해시태그 모두 삭제
+                post.getBoastHashTagList().clear();
+
+                // post(게시글) 해시태그 이미지 리스트 업데이트(저장)
+                hashTagListSave(post, hashTags);
+
+                postRepository.save(post);
+            }
+        } else {
+            throw new BoastPostException(BoastPostExceptionType.UPDATE_POST_HASHTAG_NOT_FOUND);
+        }
+
+        // 업데이트 요청에 이미지가 있다면,
+        if(postUpdateDto.getUploadImg() != null) {
+            List<MultipartFile> updateImgs = postUpdateDto.getUploadImg();
+            // 기존 post의 이미지가 있다면
+            if(post.getBoastImgPathList() != null){
+                imageService.delete(post.getBoastImgPathList());//기존에 올린 파일 지우기
+
+                // post(게시글)에 업데이트 이미지 리스트 업데이트(저장)
+                imgListSave(post, updateImgs);
+            }
+        }
 
         log.info("게시글의 이미지 리스트 : {}", post.getBoastImgPathList());
 
-        if(post.getBoastImgPathList() == null) log.info("이미지 X");
-
-        // 기존 post의 이미지가 있다면
-        if(post.getBoastImgPathList() !=null){
-            imageService.delete(post.getBoastImgPathList());//기존에 올린 파일 지우기
-
-            // post(게시글)에 업데이트 이미지 리스트 업데이트(저장)
-            List<MultipartFile> updateImgs = postUpdateDto.getUploadImg();
-            imgListSave(post, updateImgs);
-        }
 
 
 
-        // post(게시글)에 해시태그 리스트 저장
-        List<BoastHashTag> hashTags = postUpdateDto.getHashTag();
-
-        if(hashTags == null) log.info("해시태그 X");
-
-        // 기존 post 해시태그 있다면
-        if(post.getBoastHashTagList() != null) {
-            // 현재 post 해시태그 모두 삭제
-            post.getBoastHashTagList().clear();
-
-            // post(게시글) 해시태그 이미지 리스트 업데이트(저장)
-            hashTagListSave(post, hashTags);
-
-            postRepository.save(post);
-        }
 
     }
 

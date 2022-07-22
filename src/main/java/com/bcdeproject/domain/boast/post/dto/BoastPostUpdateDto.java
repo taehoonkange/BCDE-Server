@@ -12,8 +12,8 @@ import java.util.Optional;
 @NoArgsConstructor
 public class BoastPostUpdateDto {
 
-    private Optional<String> title;
-    private Optional<String> content;
+    private String title;
+    private String content;
     private List<BoastHashTag> hashTag;
     private List<MultipartFile> uploadImg;
 }
