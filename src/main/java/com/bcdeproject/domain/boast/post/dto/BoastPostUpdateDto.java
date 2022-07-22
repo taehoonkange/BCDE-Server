@@ -1,9 +1,11 @@
 package com.bcdeproject.domain.boast.post.dto;
 
+import com.bcdeproject.domain.boast.hashtag.BoastHashTag;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,8 +13,12 @@ import java.util.Optional;
 @NoArgsConstructor
 public class BoastPostUpdateDto {
 
-    private Optional<String> title;
-    private Optional<String> content;
-    private List<String> hashTag;
-    private List<MultipartFile> uploadImg;
+    @NotBlank(message = "업데이트할 제목을 입력해주세요.")
+    private String title;
+
+    @NotBlank(message = "업데이트할 내용을 입력해주세요.")
+    private String content;
+
+    private List<BoastHashTag> hashTag;
+//    private List<MultipartFile> uploadImg;
 }

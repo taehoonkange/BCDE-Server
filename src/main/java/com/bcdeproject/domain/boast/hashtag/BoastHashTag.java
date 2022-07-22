@@ -3,6 +3,7 @@ package com.bcdeproject.domain.boast.hashtag;
 import com.bcdeproject.domain.BaseTimeEntity;
 import com.bcdeproject.domain.boast.post.BoastPost;
 import com.bcdeproject.domain.member.Member;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -23,11 +24,8 @@ public class BoastHashTag extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "writer_id")
-    private Member writer;
-
-    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "post_id")
+    @JsonBackReference
     private BoastPost post;
 
     @Column
@@ -35,14 +33,9 @@ public class BoastHashTag extends BaseTimeEntity {
 
 
     // 연관 관계 편의 메소드
-    public void confirmWriter(Member writer) {
-        this.writer = writer;
-        writer.addBoastHashTag(this);
-    }
-
-    public void confirmPost(BoastPost post) {
+    public void confirmPost(BoastPost post, BoastHashTag boastHashTag) {
         this.post = post;
-        post.addBoastHashTag(this);
+        post.addBoastHashTag(boastHashTag);
     }
 
     // 수정

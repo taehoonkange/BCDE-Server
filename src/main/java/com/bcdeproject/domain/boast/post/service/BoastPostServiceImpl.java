@@ -1,7 +1,8 @@
 package com.bcdeproject.domain.boast.post.service;
 
 import com.bcdeproject.domain.boast.hashtag.BoastHashTag;
-import com.bcdeproject.domain.boast.imgpath.BoastImgPath;
+import com.bcdeproject.domain.boast.imgurl.BoastImgUrl;
+import com.bcdeproject.domain.boast.imgurl.repository.BoastImgUrlRepository;
 import com.bcdeproject.domain.boast.post.BoastPost;
 import com.bcdeproject.domain.boast.post.condition.BoastPostSearchCondition;
 import com.bcdeproject.domain.boast.post.dto.BoastPostInfoDto;
@@ -14,7 +15,6 @@ import com.bcdeproject.domain.boast.post.repository.BoastPostRepository;
 import com.bcdeproject.domain.member.exception.MemberException;
 import com.bcdeproject.domain.member.exception.MemberExceptionType;
 import com.bcdeproject.domain.member.repository.MemberRepository;
-import com.bcdeproject.global.image.exception.ImageException;
 import com.bcdeproject.global.image.handler.ImageHandler;
 import com.bcdeproject.global.image.service.ImageService;
 import com.bcdeproject.global.util.security.SecurityUtil;
@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,11 +36,12 @@ public class BoastPostServiceImpl implements BoastPostService{
 
     private final BoastPostRepository postRepository;
     private final MemberRepository memberRepository;
+    private final BoastImgUrlRepository boastImgUrlRepository;
     private final ImageService imageService;
     private final ImageHandler imageHandler;
 
     @Override
-    public void save(BoastPostSaveDto postSaveDto) throws Exception {
+    public void save(BoastPostSaveDto postSaveDto, List<MultipartFile> uploadImg) throws Exception {
         BoastPost post = BoastPost.builder()
                 .title(postSaveDto.getTitle())
                 .content(postSaveDto.getContent())
@@ -50,16 +52,16 @@ public class BoastPostServiceImpl implements BoastPostService{
                 .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER)));
 
         // post(게시글)에 이미지 리스트 저장
-        List<MultipartFile> uploadImgs = postSaveDto.getUploadImg();
-        if(uploadImgs == null) log.info("이미지 X");
+        if(uploadImg == null) log.info("이미지 X");
         else {
-            imgListSave(post, uploadImgs);
+            imgListSave(post, uploadImg);
         }
 
         // post(게시글)에 해시태그 리스트 저장
-        List<String> hashTags = postSaveDto.getHashTag();
+        List<BoastHashTag> hashTags = postSaveDto.getHashTag();
         if(hashTags == null) log.info("해시태그 X");
         else {
+            log.info("요청 해시태그 name : {}", postSaveDto.getHashTag().get(0).getName());
             hashTagListSave(post, hashTags);
         }
 
@@ -72,67 +74,95 @@ public class BoastPostServiceImpl implements BoastPostService{
      * 게시글 title, content, 이미지, 해시태그 수정
      */
     @Override
-    public void update(Long id, BoastPostUpdateDto postUpdateDto) throws Exception{
+    public void update(Long id, BoastPostUpdateDto postUpdateDto, List<MultipartFile> updateImg) throws Exception{
 
         BoastPost post = postRepository.findById(id).orElseThrow(() ->
                 new BoastPostException(BoastPostExceptionType.POST_NOT_FOUND));
 
-        checkAuthority(post, BoastPostExceptionType.NOT_AUTHORITY_UPDATE_POST );
+        checkAuthority(post, BoastPostExceptionType.NOT_AUTHORITY_UPDATE_POST);
 
-        postUpdateDto.getTitle().ifPresent(post::updateTitle);
-        postUpdateDto.getContent().ifPresent(post::updateContent);
-
-        if(post.getBoastImgPathList() == null) log.info("이미지 X");
-
-        // 기존 post의 이미지가 있다면
-        if(post.getBoastImgPathList() !=null){
-            imageService.delete(post.getBoastImgPathList());//기존에 올린 파일 지우기
-
-            // post(게시글)에 업데이트 이미지 리스트 업데이트(저장)
-            List<MultipartFile> updateImgs = postUpdateDto.getUploadImg();
-            imgListSave(post, updateImgs);
+        // 업데이트 요청에 타이틀이 있을 때 업데이트, 없으면 예외 반환(타이틀은 필수 -> 업데이트 하지 않으면 현재 내용 담아서 요청)
+        if(postUpdateDto.getTitle() != null) {
+            post.updateTitle(postUpdateDto.getTitle());
+        } else {
+            throw new BoastPostException(BoastPostExceptionType.UPDATE_POST_TITLE_NOT_FOUND);
         }
 
-
-
-        // post(게시글)에 해시태그 리스트 저장
-        List<String> hashTags = postUpdateDto.getHashTag();
-
-        if(hashTags == null) log.info("해시태그 X");
-
-        // 기존 post 해시태그 있다면
-        if(post.getBoastHashTagList() != null) {
-            // 현재 post 해시태그 모두 삭제
-            post.getBoastHashTagList().clear();
-
-            // post(게시글) 해시태그 이미지 리스트 업데이트(저장)
-            hashTagListSave(post, hashTags);
-
-            postRepository.save(post);
+        // 업데이트 요청에 내용이 있을 때 업데이트, 없으면 예외 반환(내용은 필수 -> 업데이트 하지 않으면 현재 내용 담아서 요청)
+        if(postUpdateDto.getContent() != null) {
+            post.updateContent(postUpdateDto.getContent());
+        } else {
+            throw new BoastPostException(BoastPostExceptionType.UPDATE_POST_CONTENT_NOT_FOUND);
         }
+
+        // 업데이트 요청에 해시태그가 있다면,
+        if(postUpdateDto.getHashTag() != null) {
+            List<BoastHashTag> hashTags = postUpdateDto.getHashTag();
+            // 기존 post 해시태그 있다면
+            if (post.getBoastHashTagList() != null) {
+                // 현재 post 해시태그 모두 삭제
+                post.getBoastHashTagList().clear();
+
+                // post(게시글) 해시태그 이미지 리스트 업데이트(저장)
+                hashTagListSave(post, hashTags);
+
+                postRepository.save(post);
+            }
+        } else {
+            throw new BoastPostException(BoastPostExceptionType.UPDATE_POST_HASHTAG_NOT_FOUND);
+        }
+
+        // 업데이트 요청에 이미지가 있다면,
+        if(updateImg != null) {
+            // 기존 post의 이미지가 있다면
+            if(post.getBoastImgUrlList() != null){
+                imgListDelete(post);
+                imageService.delete(post.getBoastImgUrlList());//기존에 올린 파일 지우기
+
+                // post(게시글)에 업데이트 이미지 리스트 업데이트(저장)
+                imgListSave(post, updateImg);
+            }
+        }
+
+        log.info("게시글의 이미지 리스트 : {}", post.getBoastImgUrlList());
+
+
+
+
 
     }
 
-    // 이미지 String(경로)로 변환 후 이미지마다 BoastImgPath 객체 빌더로 생성해서 post에 addBoastImgPath로 저장
-    private void imgListSave(BoastPost post, List<MultipartFile> uploadImgs) throws Exception {
-        List<String> imgPaths = imageHandler.parseFileInfo(uploadImgs);
-        for (String imgPath : imgPaths) {
-            BoastImgPath boastImgPath = BoastImgPath.builder()
-                    .imgPath(imgPath)
+    // 이미지 String(경로)로 변환 후 이미지마다 BoastImgUrl 객체 빌더로 생성해서 post에 addBoastImgUrl로 저장
+    public void imgListSave(BoastPost post, List<MultipartFile> uploadImgs) throws Exception {
+        List<String> imgUrls = imageHandler.parseFileInfo(uploadImgs);
+        for (String imgUrl : imgUrls) {
+            BoastImgUrl boastImgUrl = BoastImgUrl.builder()
+                    .imgUrl(imgUrl)
                     .post(post)
                     .writer(post.getWriter())
                     .build();
-            post.addBoastImgPath(boastImgPath);
+            post.addBoastImgUrl(boastImgUrl);
         }
     }
 
+    // 해당 post id로 find하여 이미지들을 찾은 후 반복문을 돌면서 DB에서 삭제
+    public void imgListDelete(BoastPost post) throws Exception {
+        List<BoastImgUrl> imgUrls = boastImgUrlRepository.findByPost(post);
+        for(BoastImgUrl imgUrl : imgUrls) {
+            log.info("삭제할 BoastImgUrl = {}", imgUrls.get(0).getImgUrl());
+            // DB에서 삭제하기 위해서는 부모 객체의 자식 List를 remove하면 자동으로 삭제된다.
+            post.removeBoastImgUrl(imgUrl);
+//            boastImgUrlRepository.delete(imgUrl);
+        }
+
+    }
+
     // 해시태그마다 BoastHashTag 객체 빌더로 생성해서 post에 addBoastHashTag로 저장
-    private void hashTagListSave(BoastPost post, List<String> hashTags) {
-        for(String hashTag: hashTags) {
+    public void hashTagListSave(BoastPost post, List<BoastHashTag> hashTags) {
+        for(BoastHashTag hashTag: hashTags) {
             BoastHashTag boastHashTag = BoastHashTag.builder()
-                    .name(hashTag)
+                    .name(hashTag.getName())
                     .post(post)
-                    .writer(post.getWriter())
                     .build();
             post.addBoastHashTag(boastHashTag);
         }
@@ -147,8 +177,8 @@ public class BoastPostServiceImpl implements BoastPostService{
         checkAuthority(post, BoastPostExceptionType.NOT_AUTHORITY_DELETE_POST);
 
         // 파일(로컬)과 경로(DB) 둘 다 삭제
-        if(post.getBoastImgPathList() !=null){
-            imageService.delete(post.getBoastImgPathList());//기존에 올린 파일 지우기
+        if(post.getBoastImgUrlList() !=null){
+            imageService.delete(post.getBoastImgUrlList());//기존에 올린 파일 지우기
         }
         // 경로 삭제
         postRepository.delete(post);

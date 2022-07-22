@@ -13,5 +13,5 @@ public class MemberUpdateDto {
 
     private String nickName;
 
-    private String profileImgPath;
+    private String profileImgUrl;
 }

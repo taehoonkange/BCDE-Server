@@ -26,6 +26,6 @@ public class MemberSignUpDto {
     @Size(min = 2, message = "닉네임은 2자 이상으로 입력해주세요.")
     private String nickName;
 
-    private String profileImgPath;
+    private String profileImgUrl;
 
 }

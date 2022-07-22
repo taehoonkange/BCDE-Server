@@ -34,7 +34,7 @@ public class MemberServiceImpl implements MemberService{
                 .username(memberSignUpDto.getUsername())
                 .password(memberSignUpDto.getPassword())
                 .nickName(memberSignUpDto.getNickName())
-                .profileImgPath(memberSignUpDto.getProfileImgPath())
+                .profileImgUrl(memberSignUpDto.getProfileImgUrl())
                 .build();
 
         member.addUserAuthority();
@@ -51,14 +51,18 @@ public class MemberServiceImpl implements MemberService{
     /**
      * 회원 정보 수정 로직 (닉네임, 프로필 사진)
      * 요청 시 닉네임, 프로필 사진 하나만 보내도 OK
-     * TODO : 닉네임, 프로필 사진 둘 중 아무것도 안 보냈을 때 예외 처리하기
+     * 닉네임, 프로필 사진 둘 중 아무것도 안 보냈을 때 예외 발생
      */
     @Override
     public void update(MemberUpdateDto memberUpdateDto) throws Exception {
         Member member = memberRepository.findByUsername(SecurityUtil.getLoginUsername()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
         if(memberUpdateDto.getNickName() != null) member.updateNickName(memberUpdateDto.getNickName());
-        if(memberUpdateDto.getProfileImgPath() != null) member.updateProfileImgPath(memberUpdateDto.getProfileImgPath());
+        if(memberUpdateDto.getProfileImgUrl() != null) member.updateProfileImgUrl(memberUpdateDto.getProfileImgUrl());
+
+        if(memberUpdateDto.getNickName() == null && memberUpdateDto.getProfileImgUrl() == null) {
+            throw new MemberException(MemberExceptionType.MEMBER_UPDATE_INFO_NOT_FOUND);
+        }
     }
 
 
