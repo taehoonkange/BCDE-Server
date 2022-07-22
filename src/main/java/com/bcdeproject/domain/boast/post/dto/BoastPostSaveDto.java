@@ -20,6 +20,6 @@ public class BoastPostSaveDto {
 
     private List<BoastHashTag> hashTag;
 
-    private List<MultipartFile> uploadImg;
+//    private List<MultipartFile> uploadImg;
 
 }

@@ -9,8 +9,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,8 +27,9 @@ public class BoastPostController {
      */
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public void save(@Valid @RequestBody BoastPostSaveDto boastPostSaveDto) throws Exception {
-        boastPostService.save(boastPostSaveDto);
+    public void save(@Valid @RequestPart BoastPostSaveDto boastPostSaveDto,
+                                 @RequestPart(required = false) List<MultipartFile> uploadImg) throws Exception {
+        boastPostService.save(boastPostSaveDto, uploadImg);
     }
 
     /**
@@ -35,9 +38,10 @@ public class BoastPostController {
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/{boastPostId}")
     public void update(@PathVariable("boastPostId") Long postId,
-                       @RequestBody BoastPostUpdateDto boastPostUpdateDto) throws Exception {
+                       @RequestPart BoastPostUpdateDto boastPostUpdateDto,
+                       @RequestPart(required = false) List<MultipartFile> updateImg) throws Exception {
 
-        boastPostService.update(postId, boastPostUpdateDto);
+        boastPostService.update(postId, boastPostUpdateDto, updateImg);
     }
 
     /**

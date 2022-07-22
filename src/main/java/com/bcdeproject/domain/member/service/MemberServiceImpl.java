@@ -34,7 +34,7 @@ public class MemberServiceImpl implements MemberService{
                 .username(memberSignUpDto.getUsername())
                 .password(memberSignUpDto.getPassword())
                 .nickName(memberSignUpDto.getNickName())
-                .profileImgPath(memberSignUpDto.getProfileImgPath())
+                .profileImgUrl(memberSignUpDto.getProfileImgUrl())
                 .build();
 
         member.addUserAuthority();
@@ -58,9 +58,9 @@ public class MemberServiceImpl implements MemberService{
         Member member = memberRepository.findByUsername(SecurityUtil.getLoginUsername()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
         if(memberUpdateDto.getNickName() != null) member.updateNickName(memberUpdateDto.getNickName());
-        if(memberUpdateDto.getProfileImgPath() != null) member.updateProfileImgPath(memberUpdateDto.getProfileImgPath());
+        if(memberUpdateDto.getProfileImgUrl() != null) member.updateProfileImgUrl(memberUpdateDto.getProfileImgUrl());
 
-        if(memberUpdateDto.getNickName() == null && memberUpdateDto.getProfileImgPath() == null) {
+        if(memberUpdateDto.getNickName() == null && memberUpdateDto.getProfileImgUrl() == null) {
             throw new MemberException(MemberExceptionType.MEMBER_UPDATE_INFO_NOT_FOUND);
         }
     }
