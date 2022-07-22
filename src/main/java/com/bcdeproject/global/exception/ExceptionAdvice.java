@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 public class ExceptionAdvice {
 
+    // 커스텀 예외 발생
     @ExceptionHandler(BaseException.class)
     public ResponseEntity handleBaseEx(BaseException exception){
         log.error("BaseException errorMessage(): {}",exception.getExceptionType().getErrorMessage());
@@ -23,8 +25,12 @@ public class ExceptionAdvice {
                 ,exception.getExceptionType().getHttpStatus());
     }
 
-
-
+    // HTTP Method 잘못 요청 시 발생
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity handleHttpReqeustMethodEx(HttpRequestMethodNotSupportedException exception) {
+        log.error("HTTP Method 매핑 오류 발생! {}", exception.getMessage());
+        return new ResponseEntity(new ExceptionDto(4000, exception.getMessage()),HttpStatus.METHOD_NOT_ALLOWED);
+    }
 
     //@Valid 에서 예외 발생
     @ExceptionHandler(BindException.class)
