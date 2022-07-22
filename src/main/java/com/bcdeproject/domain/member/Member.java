@@ -2,9 +2,8 @@ package com.bcdeproject.domain.member;
 
 import com.bcdeproject.domain.BaseTimeEntity;
 import com.bcdeproject.domain.boast.comment.BoastComment;
-import com.bcdeproject.domain.boast.hashtag.BoastHashTag;
 import com.bcdeproject.domain.boast.heart.BoastHeart;
-import com.bcdeproject.domain.boast.imgpath.BoastImgPath;
+import com.bcdeproject.domain.boast.imgurl.BoastImgUrl;
 import com.bcdeproject.domain.boast.post.BoastPost;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
@@ -38,7 +37,7 @@ public class Member extends BaseTimeEntity {
     private String nickName;//별명
 
     @Column(nullable = false, length = 30)
-    private String profileImgPath; // 프로필 사진
+    private String profileImgUrl; // 프로필 사진
 
     @Column(length = 1000)
     private String refreshToken;//RefreshToken
@@ -62,7 +61,8 @@ public class Member extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "writer", cascade = ALL, orphanRemoval = true)
     @Builder.Default
-    private List<BoastImgPath> boastImgPathList = new ArrayList<>();
+    @JsonManagedReference
+    private List<BoastImgUrl> boastImgUrlList = new ArrayList<>();
 
 //    @OneToMany(mappedBy = "writer", cascade = ALL, orphanRemoval = true)
 //    private List<VotePost> votePostList = new ArrayList<>();
@@ -86,9 +86,9 @@ public class Member extends BaseTimeEntity {
         boastHeartList.add(boastHeart);
     }
 
-    public void addBoastImgPath(BoastImgPath boastImgPath) {
-        //imgPath의 writer 설정은 imgPath에서 함
-        boastImgPathList.add(boastImgPath);
+    public void addBoastImgUrl(BoastImgUrl boastImgUrl) {
+        //imgUrl의 writer 설정은 imgUrl에서 함
+        boastImgUrlList.add(boastImgUrl);
     }
 
 
@@ -116,8 +116,8 @@ public class Member extends BaseTimeEntity {
         this.nickName = nickName;
     }
 
-    public void updateProfileImgPath(String profileImgPath){
-        this.profileImgPath = profileImgPath;
+    public void updateProfileImgUrl(String profileImgUrl){
+        this.profileImgUrl = profileImgUrl;
     }
 
     public void updateRefreshToken(String refreshToken){

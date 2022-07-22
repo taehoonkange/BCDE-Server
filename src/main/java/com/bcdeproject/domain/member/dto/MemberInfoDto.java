@@ -11,12 +11,12 @@ public class MemberInfoDto {
 
     private String username;
     private String nickName;
-    private String profileImgPath;
+    private String profileImgUrl;
 
     @Builder
     public MemberInfoDto(Member member) {
         this.username = member.getUsername();
         this.nickName = member.getNickName();
-        this.profileImgPath = member.getProfileImgPath();
+        this.profileImgUrl = member.getProfileImgUrl();
     }
 }

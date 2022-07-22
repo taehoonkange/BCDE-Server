@@ -3,7 +3,7 @@ package com.bcdeproject.domain.boast.post.dto;
 import com.bcdeproject.domain.boast.comment.BoastComment;
 import com.bcdeproject.domain.boast.comment.dto.BoastCommentInfoDto;
 import com.bcdeproject.domain.boast.hashtag.BoastHashTag;
-import com.bcdeproject.domain.boast.imgpath.BoastImgPath;
+import com.bcdeproject.domain.boast.imgurl.BoastImgUrl;
 import com.bcdeproject.domain.boast.post.BoastPost;
 import com.bcdeproject.domain.member.dto.MemberInfoDto;
 import lombok.Data;
@@ -18,7 +18,7 @@ public class BoastPostInfoDto {
     private Long postId; //POST의 ID
     private String title;//제목
     private String content;//내용
-    private List<BoastImgPath> imgPath;//업로드 파일 경로 리스트
+    private List<BoastImgUrl> imgUrl;//업로드 파일 경로 리스트
     private List<BoastHashTag> hashTag;
 
     private MemberInfoDto writerDto;//작성자에 대한 정보
@@ -32,7 +32,7 @@ public class BoastPostInfoDto {
         this.postId = post.getId();
         this.title = post.getTitle();
         this.content = post.getContent();
-        this.imgPath = post.getBoastImgPathList();
+        this.imgUrl = post.getBoastImgUrlList();
         this.hashTag = post.getBoastHashTagList();
 
 
