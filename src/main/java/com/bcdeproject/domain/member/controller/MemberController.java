@@ -57,9 +57,9 @@ public class MemberController {
     /**
      * 회원정보조회
      */
-    @GetMapping("/member/{id}")
-    public ResponseEntity getInfo(@Valid @PathVariable("id") Long id) throws Exception {
-        MemberInfoDto info = memberService.getInfo(id);
+    @GetMapping("/member/{memberId}")
+    public ResponseEntity getInfo(@Valid @PathVariable("memberId") Long memberId) throws Exception {
+        MemberInfoDto info = memberService.getInfo(memberId);
         return new ResponseEntity(info, HttpStatus.OK);
     }
 

@@ -104,8 +104,8 @@ public class MemberServiceImpl implements MemberService{
      * id를 받아서 id에 해당하는 회원의 정보를 조회 (여기서 id는 유저 아이디가 아니라 -> DB의 seq, idx)
      */
     @Override
-    public MemberInfoDto getInfo(Long id) throws Exception {
-        Member findMember = memberRepository.findById(id).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+    public MemberInfoDto getInfo(Long memberId) throws Exception {
+        Member findMember = memberRepository.findById(memberId).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         return new MemberInfoDto(findMember);
     }
 
