@@ -14,6 +14,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/boastPost")
 public class BoastPostController {
 
     private final BoastPostService boastPostService;
@@ -23,7 +24,7 @@ public class BoastPostController {
      * 게시글 저장
      */
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/post")
+    @PostMapping
     public void save(@Valid @RequestBody BoastPostSaveDto boastPostSaveDto) throws Exception {
         boastPostService.save(boastPostSaveDto);
     }
@@ -32,8 +33,8 @@ public class BoastPostController {
      * 게시글 수정
      */
     @ResponseStatus(HttpStatus.OK)
-    @PatchMapping("/post/{postId}")
-    public void update(@PathVariable("postId") Long postId,
+    @PatchMapping("/{boastPostId}")
+    public void update(@PathVariable("boastPostId") Long postId,
                        @RequestBody BoastPostUpdateDto boastPostUpdateDto) throws Exception {
 
         boastPostService.update(postId, boastPostUpdateDto);
@@ -43,8 +44,8 @@ public class BoastPostController {
      * 게시글 삭제
      */
     @ResponseStatus(HttpStatus.OK)
-    @DeleteMapping("/post/{postId}")
-    public void delete(@PathVariable("postId") Long postId){
+    @DeleteMapping("/{boastPostId}")
+    public void delete(@PathVariable("boastPostId") Long postId){
         boastPostService.delete(postId);
     }
 
@@ -52,15 +53,15 @@ public class BoastPostController {
     /**
      * 게시글 조회
      */
-    @GetMapping("/post/{postId}")
-    public ResponseEntity getInfo(@PathVariable("postId") Long postId){
+    @GetMapping("/{boastPostId}")
+    public ResponseEntity getInfo(@PathVariable("boastPostId") Long postId){
         return ResponseEntity.ok(boastPostService.getPostInfo(postId));
     }
 
     /**
      * 게시글 검색
      */
-    @GetMapping("/post/search")
+    @GetMapping("/search")
     public ResponseEntity search(Pageable pageable,
                                  @RequestBody BoastPostSearchCondition boastPostSearchCondition){
 
