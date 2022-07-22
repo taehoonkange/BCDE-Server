@@ -51,7 +51,7 @@ public class MemberServiceImpl implements MemberService{
     /**
      * 회원 정보 수정 로직 (닉네임, 프로필 사진)
      * 요청 시 닉네임, 프로필 사진 하나만 보내도 OK
-     * TODO : 닉네임, 프로필 사진 둘 중 아무것도 안 보냈을 때 예외 처리하기
+     * 닉네임, 프로필 사진 둘 중 아무것도 안 보냈을 때 예외 발생
      */
     @Override
     public void update(MemberUpdateDto memberUpdateDto) throws Exception {
@@ -59,6 +59,10 @@ public class MemberServiceImpl implements MemberService{
 
         if(memberUpdateDto.getNickName() != null) member.updateNickName(memberUpdateDto.getNickName());
         if(memberUpdateDto.getProfileImgPath() != null) member.updateProfileImgPath(memberUpdateDto.getProfileImgPath());
+
+        if(memberUpdateDto.getNickName() == null && memberUpdateDto.getProfileImgPath() == null) {
+            throw new MemberException(MemberExceptionType.MEMBER_UPDATE_INFO_NOT_FOUND);
+        }
     }
 
 
