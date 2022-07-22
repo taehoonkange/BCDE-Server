@@ -6,6 +6,7 @@ import com.bcdeproject.domain.boast.hashtag.BoastHashTag;
 import com.bcdeproject.domain.boast.heart.BoastHeart;
 import com.bcdeproject.domain.boast.imgpath.BoastImgPath;
 import com.bcdeproject.domain.boast.post.BoastPost;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -48,15 +49,12 @@ public class Member extends BaseTimeEntity {
     // 회원 탈퇴 시 사용 -> 작성 게시물, 댓글, 해시태그, 이미지 / 누른 좋아요 모두 삭제
     @OneToMany(mappedBy = "writer", cascade = ALL, orphanRemoval = true)
     @Builder.Default
+    @JsonManagedReference
     private List<BoastPost> boastPostList = new ArrayList<>();
 
     @OneToMany(mappedBy = "writer", cascade = ALL, orphanRemoval = true)
     @Builder.Default
     private List<BoastComment> boastCommentList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "writer", cascade = ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<BoastHashTag> boastHashTagList = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
     @Builder.Default
@@ -86,11 +84,6 @@ public class Member extends BaseTimeEntity {
     public void addBoastHeart(BoastHeart boastHeart) {
         //heart의 member 설정은 heart에서 함
         boastHeartList.add(boastHeart);
-    }
-
-    public void addBoastHashTag(BoastHashTag boastHashTag) {
-        //hashtag의 writer 설정은 hashtag에서 함
-        boastHashTagList.add(boastHashTag);
     }
 
     public void addBoastImgPath(BoastImgPath boastImgPath) {

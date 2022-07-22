@@ -57,7 +57,7 @@ public class BoastPostServiceImpl implements BoastPostService{
         }
 
         // post(게시글)에 해시태그 리스트 저장
-        List<String> hashTags = postSaveDto.getHashTag();
+        List<BoastHashTag> hashTags = postSaveDto.getHashTag();
         if(hashTags == null) log.info("해시태그 X");
         else {
             hashTagListSave(post, hashTags);
@@ -82,6 +82,8 @@ public class BoastPostServiceImpl implements BoastPostService{
         postUpdateDto.getTitle().ifPresent(post::updateTitle);
         postUpdateDto.getContent().ifPresent(post::updateContent);
 
+        log.info("게시글의 이미지 리스트 : {}", post.getBoastImgPathList());
+
         if(post.getBoastImgPathList() == null) log.info("이미지 X");
 
         // 기존 post의 이미지가 있다면
@@ -96,7 +98,7 @@ public class BoastPostServiceImpl implements BoastPostService{
 
 
         // post(게시글)에 해시태그 리스트 저장
-        List<String> hashTags = postUpdateDto.getHashTag();
+        List<BoastHashTag> hashTags = postUpdateDto.getHashTag();
 
         if(hashTags == null) log.info("해시태그 X");
 
@@ -127,12 +129,11 @@ public class BoastPostServiceImpl implements BoastPostService{
     }
 
     // 해시태그마다 BoastHashTag 객체 빌더로 생성해서 post에 addBoastHashTag로 저장
-    private void hashTagListSave(BoastPost post, List<String> hashTags) {
-        for(String hashTag: hashTags) {
+    private void hashTagListSave(BoastPost post, List<BoastHashTag> hashTags) {
+        for(BoastHashTag hashTag: hashTags) {
             BoastHashTag boastHashTag = BoastHashTag.builder()
-                    .name(hashTag)
+                    .name(hashTag.getName())
                     .post(post)
-                    .writer(post.getWriter())
                     .build();
             post.addBoastHashTag(boastHashTag);
         }

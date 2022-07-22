@@ -6,6 +6,8 @@ import com.bcdeproject.domain.boast.hashtag.BoastHashTag;
 import com.bcdeproject.domain.boast.heart.BoastHeart;
 import com.bcdeproject.domain.boast.imgpath.BoastImgPath;
 import com.bcdeproject.domain.member.Member;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -30,6 +32,7 @@ public class BoastPost extends BaseTimeEntity {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "writer_id")
+    @JsonBackReference
     private Member writer;
 
     @Column(length = 40, nullable = false)
@@ -47,6 +50,7 @@ public class BoastPost extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "post", cascade = ALL, orphanRemoval = true)
     @Builder.Default
+    @JsonManagedReference
     private List<BoastHashTag> boastHashTagList = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = ALL, orphanRemoval = true)
