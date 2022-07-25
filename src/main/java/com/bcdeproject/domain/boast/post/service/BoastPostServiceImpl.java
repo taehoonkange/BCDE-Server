@@ -130,7 +130,7 @@ public class BoastPostServiceImpl implements BoastPostService{
 
     // 이미지 String(경로)로 변환 후 이미지마다 BoastImgUrl 객체 빌더로 생성해서 post에 addBoastImgUrl로 저장
     public void imgListSave(BoastPost post, List<MultipartFile> uploadImgs) throws Exception {
-        List<String> imgUrls = imageHandler.parseFileInfo(uploadImgs);
+        List<String> imgUrls = imageHandler.parseFileListInfo(uploadImgs);
         for (String imgUrl : imgUrls) {
             BoastImgUrl boastImgUrl = BoastImgUrl.builder()
                     .imgUrl(imgUrl)
@@ -206,6 +206,7 @@ public class BoastPostServiceImpl implements BoastPostService{
                 .orElseThrow(() -> new BoastPostException(BoastPostExceptionType.POST_NOT_FOUND)));
     }
 
+    // TODO: HashTag도 검색 조건에 추가
     @Override
     public BoastPostPagingDto getPostList(Pageable pageable, BoastPostSearchCondition postSearchCondition) {
         return new BoastPostPagingDto(postRepository.search(postSearchCondition, pageable));
