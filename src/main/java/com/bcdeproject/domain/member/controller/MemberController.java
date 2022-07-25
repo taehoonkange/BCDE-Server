@@ -6,9 +6,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,8 +24,9 @@ public class MemberController {
      */
     @PostMapping("/signUp")
     @ResponseStatus(HttpStatus.OK)
-    public void signUp(@Valid @RequestBody MemberSignUpDto memberSignUpDto) throws Exception {
-        memberService.signUp(memberSignUpDto);
+    public void signUp(@Valid @RequestPart MemberSignUpDto memberSignUpDto,
+                       @RequestPart (required = false) MultipartFile profileImg) throws Exception {
+        memberService.signUp(memberSignUpDto, profileImg);
     }
 
     /**

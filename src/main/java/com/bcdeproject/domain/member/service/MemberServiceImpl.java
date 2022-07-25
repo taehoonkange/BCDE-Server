@@ -7,21 +7,27 @@ import com.bcdeproject.domain.member.dto.MemberUpdateDto;
 import com.bcdeproject.domain.member.exception.MemberException;
 import com.bcdeproject.domain.member.exception.MemberExceptionType;
 import com.bcdeproject.domain.member.repository.MemberRepository;
+import com.bcdeproject.global.image.handler.ImageHandler;
+import com.bcdeproject.global.image.service.ImageService;
 import com.bcdeproject.global.util.security.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class MemberServiceImpl implements MemberService{
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ImageHandler imageHandler;
 
     /**
      * 회원가입 로직
@@ -29,12 +35,15 @@ public class MemberServiceImpl implements MemberService{
      * 변환 후 USER 권한 설정, 이후 중복된 아이디가 있는지 체크
      */
     @Override
-    public void signUp(MemberSignUpDto memberSignUpDto) throws Exception {
+    public void signUp(MemberSignUpDto memberSignUpDto, MultipartFile profileImg) throws Exception {
+        String profileImgUrl = imageHandler.parseFileInfo(profileImg);
+        log.info("프로필 사진 이미지 url : {}", profileImgUrl);
+
         Member member = Member.builder()
                 .username(memberSignUpDto.getUsername())
                 .password(memberSignUpDto.getPassword())
                 .nickName(memberSignUpDto.getNickName())
-                .profileImgUrl(memberSignUpDto.getProfileImgUrl())
+                .profileImgUrl(profileImgUrl)
                 .build();
 
         member.addUserAuthority();
