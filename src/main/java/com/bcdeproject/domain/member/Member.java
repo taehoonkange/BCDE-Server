@@ -48,7 +48,6 @@ public class Member extends BaseTimeEntity {
     // 회원 탈퇴 시 사용 -> 작성 게시물, 댓글, 해시태그, 이미지 / 누른 좋아요 모두 삭제
     @OneToMany(mappedBy = "writer", cascade = ALL, orphanRemoval = true)
     @Builder.Default
-    @JsonManagedReference
     private List<BoastPost> boastPostList = new ArrayList<>();
 
     @OneToMany(mappedBy = "writer", cascade = ALL, orphanRemoval = true)
@@ -61,7 +60,6 @@ public class Member extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "writer", cascade = ALL, orphanRemoval = true)
     @Builder.Default
-    @JsonManagedReference
     private List<BoastImgUrl> boastImgUrlList = new ArrayList<>();
 
 //    @OneToMany(mappedBy = "writer", cascade = ALL, orphanRemoval = true)

@@ -26,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -194,7 +193,7 @@ public class BoastPostServiceImpl implements BoastPostService{
      * Post의 id를 통해 Post 조회
      */
     @Override
-    public BoastPostInfoDto getPostInfo(Long id) {
+    public BoastPostInfoDto.Response getPostInfo(Long id) {
         /**
          * Post + MEMBER 조회 -> 쿼리 1번 발생
          *
@@ -206,7 +205,7 @@ public class BoastPostServiceImpl implements BoastPostService{
          *
          *
          */
-        return new BoastPostInfoDto(postRepository.findWithWriterById(id)
+        return new BoastPostInfoDto.Response(postRepository.findWithWriterById(id)
                 .orElseThrow(() -> new BoastPostException(BoastPostExceptionType.POST_NOT_FOUND)));
     }
 

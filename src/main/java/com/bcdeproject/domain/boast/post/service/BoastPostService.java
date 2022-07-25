@@ -28,8 +28,9 @@ public interface BoastPostService {
 
     /**
      * 게시글 1개 조회
+     * @return
      */
-    BoastPostInfoDto getPostInfo(Long id);
+    BoastPostInfoDto.Response getPostInfo(Long id);
 
 
     /**

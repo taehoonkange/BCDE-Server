@@ -18,6 +18,7 @@ public class MemberController {
 
     /**
      * 회원가입
+     * TODO : MultipartFile로 프로필 사진 이미지 받기
      */
     @PostMapping("/signUp")
     @ResponseStatus(HttpStatus.OK)

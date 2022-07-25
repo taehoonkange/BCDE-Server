@@ -32,7 +32,6 @@ public class BoastPost extends BaseTimeEntity {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "writer_id")
-    @JsonBackReference
     private Member writer;
 
     @Column(length = 40, nullable = false)
@@ -50,7 +49,6 @@ public class BoastPost extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "post", cascade = ALL, orphanRemoval = true)
     @Builder.Default
-    @JsonManagedReference
     private List<BoastHashTag> boastHashTagList = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = ALL, orphanRemoval = true)

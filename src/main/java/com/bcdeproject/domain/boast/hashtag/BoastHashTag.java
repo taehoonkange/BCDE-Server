@@ -25,7 +25,6 @@ public class BoastHashTag extends BaseTimeEntity {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "post_id")
-    @JsonBackReference
     private BoastPost post;
 
     @Column
