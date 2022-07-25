@@ -1,6 +1,7 @@
 package com.bcdeproject.domain.boast.post.service;
 
 import com.bcdeproject.domain.boast.hashtag.BoastHashTag;
+import com.bcdeproject.domain.boast.hashtag.dto.BoastHashTagDto;
 import com.bcdeproject.domain.boast.imgurl.BoastImgUrl;
 import com.bcdeproject.domain.boast.imgurl.repository.BoastImgUrlRepository;
 import com.bcdeproject.domain.boast.post.BoastPost;
@@ -57,7 +58,7 @@ public class BoastPostServiceImpl implements BoastPostService{
         }
 
         // post(게시글)에 해시태그 리스트 저장
-        List<BoastHashTag> hashTags = postSaveDto.getHashTag();
+        List<BoastHashTagDto> hashTags = postSaveDto.getHashTag();
         if(hashTags == null) log.info("해시태그 X");
         else {
             log.info("요청 해시태그 name : {}", postSaveDto.getHashTag().get(0).getName());
@@ -96,7 +97,7 @@ public class BoastPostServiceImpl implements BoastPostService{
 
         // 업데이트 요청에 해시태그가 있다면,
         if(postUpdateDto.getHashTag() != null) {
-            List<BoastHashTag> hashTags = postUpdateDto.getHashTag();
+            List<BoastHashTagDto> hashTags = postUpdateDto.getHashTag();
             // 기존 post 해시태그 있다면
             if (post.getBoastHashTagList() != null) {
                 // 현재 post 해시태그 모두 삭제
@@ -124,10 +125,6 @@ public class BoastPostServiceImpl implements BoastPostService{
         }
 
         log.info("게시글의 이미지 리스트 : {}", post.getBoastImgUrlList());
-
-
-
-
 
     }
 
@@ -157,8 +154,8 @@ public class BoastPostServiceImpl implements BoastPostService{
     }
 
     // 해시태그마다 BoastHashTag 객체 빌더로 생성해서 post에 addBoastHashTag로 저장
-    public void hashTagListSave(BoastPost post, List<BoastHashTag> hashTags) {
-        for(BoastHashTag hashTag: hashTags) {
+    public void hashTagListSave(BoastPost post, List<BoastHashTagDto> hashTags) {
+        for(BoastHashTagDto hashTag: hashTags) {
             BoastHashTag boastHashTag = BoastHashTag.builder()
                     .name(hashTag.getName())
                     .post(post)
@@ -193,7 +190,7 @@ public class BoastPostServiceImpl implements BoastPostService{
      * Post의 id를 통해 Post 조회
      */
     @Override
-    public BoastPostInfoDto.Response getPostInfo(Long id) {
+    public BoastPostInfoDto getPostInfo(Long id) {
         /**
          * Post + MEMBER 조회 -> 쿼리 1번 발생
          *
@@ -205,7 +202,7 @@ public class BoastPostServiceImpl implements BoastPostService{
          *
          *
          */
-        return new BoastPostInfoDto.Response(postRepository.findWithWriterById(id)
+        return new BoastPostInfoDto(postRepository.findWithWriterById(id)
                 .orElseThrow(() -> new BoastPostException(BoastPostExceptionType.POST_NOT_FOUND)));
     }
 

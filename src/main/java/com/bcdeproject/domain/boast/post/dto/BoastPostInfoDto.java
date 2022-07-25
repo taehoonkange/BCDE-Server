@@ -3,7 +3,9 @@ package com.bcdeproject.domain.boast.post.dto;
 import com.bcdeproject.domain.boast.comment.BoastComment;
 import com.bcdeproject.domain.boast.comment.dto.BoastCommentInfoDto;
 import com.bcdeproject.domain.boast.hashtag.BoastHashTag;
+import com.bcdeproject.domain.boast.hashtag.dto.BoastHashTagDto;
 import com.bcdeproject.domain.boast.imgurl.BoastImgUrl;
+import com.bcdeproject.domain.boast.imgurl.dto.BoastImgUrlDto;
 import com.bcdeproject.domain.boast.post.BoastPost;
 import com.bcdeproject.domain.member.dto.MemberInfoDto;
 import lombok.Data;
@@ -15,11 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Data
+@NoArgsConstructor
 public class BoastPostInfoDto {
 
-    @Getter
-    @NoArgsConstructor
-    public static class Response {
         private Long postId; // POST의 ID
         private String title; // 제목
         private String content; // 내용
@@ -29,7 +30,7 @@ public class BoastPostInfoDto {
         private LocalDateTime createdDate; // 작성 시간
         private LocalDateTime lastModifiedDate; // 마지막 수정 시간
 
-        public Response(BoastPost boastPost) {
+        public BoastPostInfoDto(BoastPost boastPost) {
             this.postId = boastPost.getId();
             this.title = boastPost.getTitle();
             this.content = boastPost.getContent();
@@ -112,34 +113,3 @@ public class BoastPostInfoDto {
 //
 //
 //    }
-
-    @Getter
-    public static class BoastImgUrlDto {
-        private Long id;
-        private String imgUrl;
-        private LocalDateTime createdDate;
-        private LocalDateTime lastModifiedDate;
-
-        public BoastImgUrlDto(BoastImgUrl boastImgUrl) {
-            this.id = boastImgUrl.getId();
-            this.imgUrl = boastImgUrl.getImgUrl();
-            this.createdDate = boastImgUrl.getCreatedDate();
-            this.lastModifiedDate = boastImgUrl.getLastModifiedDate();
-        }
-    }
-
-    @Getter
-    public static class BoastHashTagDto {
-        private Long id;
-        private String name;
-        private LocalDateTime createdDate;
-        private LocalDateTime lastModifiedDate;
-
-        public BoastHashTagDto(BoastHashTag boastHashTag) {
-            this.id = boastHashTag.getId();
-            this.name = boastHashTag.getName();
-            this.createdDate = boastHashTag.getCreatedDate();
-            this.lastModifiedDate = boastHashTag.getLastModifiedDate();
-        }
-    }
-}
