@@ -3,10 +3,12 @@ package com.bcdeproject.domain.boast.hashtag.dto;
 
 import com.bcdeproject.domain.boast.hashtag.BoastHashTag;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Getter
+@NoArgsConstructor
 public class BoastHashTagDto {
     private Long id;
     private String name;
