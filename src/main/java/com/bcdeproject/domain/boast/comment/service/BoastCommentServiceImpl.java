@@ -28,6 +28,12 @@ public class BoastCommentServiceImpl implements BoastCommentService{
     private final MemberRepository memberRepository;
     private final BoastPostRepository boastPostRepository;
 
+    /**
+     * 댓글 저장 로직
+     * 컨트롤러에서 postId, BoastCommentSaveDto를 받고,
+     * BoastCommentSaveDto에서 content를 꺼내서 빌더로 BoastComment 객체 생성
+     * 생성한 객체에 writer, post 추가한 후 DB에 저장
+     */
     @Override
     public void save(Long postId, BoastCommentSaveDto boastCommentSaveDto) {
         BoastComment comment = BoastComment.builder().content(boastCommentSaveDto.getContent()).build();
@@ -39,6 +45,12 @@ public class BoastCommentServiceImpl implements BoastCommentService{
         boastCommentRepository.save(comment);
     }
 
+    /**
+     * 대댓글 저장 로직
+     * 컨트롤러에서 postId, parentId(부모 댓글 id), BoastCommentSaveDto를 받고,
+     * BoastCommentSaveDto에서 content를 꺼내서 빌더로 BoastComment 객체 생성
+     * 생성한 객체에 writer, post, parent(부모 댓글) 추가한 후 DB에 저장
+     */
     @Override
     public void saveReComment(Long postId, Long parentId, BoastCommentSaveDto boastCommentSaveDto) {
         BoastComment comment = BoastComment.builder().content(boastCommentSaveDto.getContent()).build();
@@ -53,6 +65,11 @@ public class BoastCommentServiceImpl implements BoastCommentService{
     }
 
 
+    /**
+     * 댓글 업데이트 로직
+     * 컨트롤러에서 Id(댓글 id), BoastCommentUpdateDto를 받고,
+     * id에 해당하는 댓글을 DB에서 찾은 후, 내용 수정
+     */
     @Override
     public void update(Long id, BoastCommentUpdateDto boastCommentUpdateDto) {
 
@@ -65,7 +82,11 @@ public class BoastCommentServiceImpl implements BoastCommentService{
     }
 
 
-
+    /**
+     * 댓글 삭제 로직
+     * 컨트롤러에서 Id(댓글 id)를 받고
+     * id에 해당하는 댓글을 찾아서 삭제
+     */
     @Override
     public void remove(Long id) throws BoastCommentException {
         BoastComment comment = boastCommentRepository.findById(id).orElseThrow(() -> new BoastCommentException(BoastCommentExceptionType.NOT_FOUND_COMMENT));

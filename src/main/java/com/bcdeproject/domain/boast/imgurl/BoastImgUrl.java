@@ -25,7 +25,6 @@ public class BoastImgUrl extends BaseTimeEntity {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "writer_id")
-    @JsonBackReference
     private Member writer;
 
     @ManyToOne(fetch = LAZY)

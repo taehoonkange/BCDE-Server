@@ -18,7 +18,10 @@ public class ImageHandler {
 
     private final ImageService imageService;
 
-    public List<String> parseFileInfo(List<MultipartFile> multipartFiles) throws Exception {
+    /**
+     * 이미지 리스트 경로로 변환
+     */
+    public List<String> parseFileListInfo(List<MultipartFile> multipartFiles) throws Exception {
 
         // 반환을 할 이미지 리스트
         List<String> imgUrlList = new ArrayList<>();
@@ -34,5 +37,14 @@ public class ImageHandler {
         }
 
         return imgUrlList;
+    }
+
+    /**
+     * 이미지 파일 1개 경로 변환
+     */
+    public String parseFileInfo(MultipartFile multipartFile) {
+        String imgUrl = imageService.save(multipartFile);
+
+        return imgUrl;
     }
 }

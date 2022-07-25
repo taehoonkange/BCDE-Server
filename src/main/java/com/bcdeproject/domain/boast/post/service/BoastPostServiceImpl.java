@@ -1,6 +1,7 @@
 package com.bcdeproject.domain.boast.post.service;
 
 import com.bcdeproject.domain.boast.hashtag.BoastHashTag;
+import com.bcdeproject.domain.boast.hashtag.dto.BoastHashTagDto;
 import com.bcdeproject.domain.boast.imgurl.BoastImgUrl;
 import com.bcdeproject.domain.boast.imgurl.repository.BoastImgUrlRepository;
 import com.bcdeproject.domain.boast.post.BoastPost;
@@ -26,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -58,7 +58,7 @@ public class BoastPostServiceImpl implements BoastPostService{
         }
 
         // post(게시글)에 해시태그 리스트 저장
-        List<BoastHashTag> hashTags = postSaveDto.getHashTag();
+        List<BoastHashTagDto> hashTags = postSaveDto.getHashTag();
         if(hashTags == null) log.info("해시태그 X");
         else {
             log.info("요청 해시태그 name : {}", postSaveDto.getHashTag().get(0).getName());
@@ -97,7 +97,7 @@ public class BoastPostServiceImpl implements BoastPostService{
 
         // 업데이트 요청에 해시태그가 있다면,
         if(postUpdateDto.getHashTag() != null) {
-            List<BoastHashTag> hashTags = postUpdateDto.getHashTag();
+            List<BoastHashTagDto> hashTags = postUpdateDto.getHashTag();
             // 기존 post 해시태그 있다면
             if (post.getBoastHashTagList() != null) {
                 // 현재 post 해시태그 모두 삭제
@@ -126,15 +126,11 @@ public class BoastPostServiceImpl implements BoastPostService{
 
         log.info("게시글의 이미지 리스트 : {}", post.getBoastImgUrlList());
 
-
-
-
-
     }
 
     // 이미지 String(경로)로 변환 후 이미지마다 BoastImgUrl 객체 빌더로 생성해서 post에 addBoastImgUrl로 저장
     public void imgListSave(BoastPost post, List<MultipartFile> uploadImgs) throws Exception {
-        List<String> imgUrls = imageHandler.parseFileInfo(uploadImgs);
+        List<String> imgUrls = imageHandler.parseFileListInfo(uploadImgs);
         for (String imgUrl : imgUrls) {
             BoastImgUrl boastImgUrl = BoastImgUrl.builder()
                     .imgUrl(imgUrl)
@@ -158,8 +154,8 @@ public class BoastPostServiceImpl implements BoastPostService{
     }
 
     // 해시태그마다 BoastHashTag 객체 빌더로 생성해서 post에 addBoastHashTag로 저장
-    public void hashTagListSave(BoastPost post, List<BoastHashTag> hashTags) {
-        for(BoastHashTag hashTag: hashTags) {
+    public void hashTagListSave(BoastPost post, List<BoastHashTagDto> hashTags) {
+        for(BoastHashTagDto hashTag: hashTags) {
             BoastHashTag boastHashTag = BoastHashTag.builder()
                     .name(hashTag.getName())
                     .post(post)
@@ -210,6 +206,7 @@ public class BoastPostServiceImpl implements BoastPostService{
                 .orElseThrow(() -> new BoastPostException(BoastPostExceptionType.POST_NOT_FOUND)));
     }
 
+    // TODO: HashTag도 검색 조건에 추가
     @Override
     public BoastPostPagingDto getPostList(Pageable pageable, BoastPostSearchCondition postSearchCondition) {
         return new BoastPostPagingDto(postRepository.search(postSearchCondition, pageable));
