@@ -67,10 +67,9 @@ public class MemberServiceImpl implements MemberService{
     public void update(MemberUpdateDto memberUpdateDto, MultipartFile updateProfileImg) throws Exception {
         Member member = memberRepository.findByUsername(SecurityUtil.getLoginUsername()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
-        String updateProfileImgUrl = imageHandler.parseFileInfo(updateProfileImg);
-
         // 업데이트 요청에 프로필 사진 이미지가 있다면,
         if(updateProfileImg != null) {
+            String updateProfileImgUrl = imageHandler.parseFileInfo(updateProfileImg);
             // 기존 member의 이미지가 있다면
             if(member.getProfileImgUrl() != null){
                 imageService.delete(member.getProfileImgUrl()); // 기존에 올린 파일 저장소에서 지우기
