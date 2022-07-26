@@ -37,25 +37,43 @@ public class MemberServiceImpl implements MemberService{
      */
     @Override
     public void signUp(MemberSignUpDto memberSignUpDto, MultipartFile profileImg) throws Exception {
-        String profileImgUrl = imageHandler.parseFileInfo(profileImg);
-        log.info("프로필 사진 이미지 url : {}", profileImgUrl);
 
-        Member member = Member.builder()
-                .username(memberSignUpDto.getUsername())
-                .password(memberSignUpDto.getPassword())
-                .nickName(memberSignUpDto.getNickName())
-                .profileImgUrl(profileImgUrl)
-                .build();
-
-        member.addUserAuthority();
-        member.encodePassword(passwordEncoder);
-
-
+        // ID가 이미 존재한다면 회원 중복 예외 발생
         if(memberRepository.findByUsername(memberSignUpDto.getUsername()).isPresent()){
             throw new MemberException(MemberExceptionType.ALREADY_EXIST_USERNAME);
         }
 
-        memberRepository.save(member);
+        // profileImg가 들어온다면, member 객체 빌더로 생성 시 profileImg도 생성하여 DB에 저장
+        if(profileImg != null) {
+            String profileImgUrl = imageHandler.parseFileInfo(profileImg);
+            log.info("프로필 사진 이미지 url : {}", profileImgUrl);
+
+            Member member = Member.builder()
+                    .username(memberSignUpDto.getUsername())
+                    .password(memberSignUpDto.getPassword())
+                    .nickName(memberSignUpDto.getNickName())
+                    .profileImgUrl(profileImgUrl)
+                    .build();
+
+            member.addUserAuthority();
+            member.encodePassword(passwordEncoder);
+
+            memberRepository.save(member);
+
+        // profileImg가 들어오지 않는다면, member 객체 빌더로 생성 시 profileImg를 제외하고 생성하여 DB에 저장
+        } else {
+            Member member = Member.builder()
+                    .username(memberSignUpDto.getUsername())
+                    .password(memberSignUpDto.getPassword())
+                    .nickName(memberSignUpDto.getNickName())
+                    .build();
+
+            member.addUserAuthority();
+            member.encodePassword(passwordEncoder);
+
+            memberRepository.save(member);
+        }
+
     }
 
     /**
