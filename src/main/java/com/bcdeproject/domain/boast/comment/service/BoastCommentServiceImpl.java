@@ -78,7 +78,8 @@ public class BoastCommentServiceImpl implements BoastCommentService{
             throw new BoastCommentException(BoastCommentExceptionType.NOT_AUTHORITY_UPDATE_COMMENT);
         }
 
-        boastCommentUpdateDto.getContent().ifPresent(comment::updateContent);
+        String updateContent = boastCommentUpdateDto.getContent();
+        comment.updateContent(updateContent);
     }
 
 

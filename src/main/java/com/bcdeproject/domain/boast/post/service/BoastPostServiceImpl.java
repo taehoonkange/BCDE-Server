@@ -5,7 +5,7 @@ import com.bcdeproject.domain.boast.hashtag.dto.BoastHashTagDto;
 import com.bcdeproject.domain.boast.imgurl.BoastImgUrl;
 import com.bcdeproject.domain.boast.imgurl.repository.BoastImgUrlRepository;
 import com.bcdeproject.domain.boast.post.BoastPost;
-import com.bcdeproject.domain.boast.post.condition.BoastPostSearchCondition;
+import com.bcdeproject.global.condition.BoastPostSearchCondition;
 import com.bcdeproject.domain.boast.post.dto.BoastPostInfoDto;
 import com.bcdeproject.domain.boast.post.dto.BoastPostPagingDto;
 import com.bcdeproject.domain.boast.post.dto.BoastPostSaveDto;
@@ -116,8 +116,9 @@ public class BoastPostServiceImpl implements BoastPostService{
         if(updateImg != null) {
             // 기존 post의 이미지가 있다면
             if(post.getBoastImgUrlList() != null){
+                imageService.deleteList(post.getBoastImgUrlList());//기존에 올린 파일 지우기
                 imgListDelete(post);
-                imageService.delete(post.getBoastImgUrlList());//기존에 올린 파일 지우기
+
 
                 // post(게시글)에 업데이트 이미지 리스트 업데이트(저장)
                 imgListSave(post, updateImg);
@@ -174,7 +175,7 @@ public class BoastPostServiceImpl implements BoastPostService{
 
         // 파일(로컬)과 경로(DB) 둘 다 삭제
         if(post.getBoastImgUrlList() !=null){
-            imageService.delete(post.getBoastImgUrlList());//기존에 올린 파일 지우기
+            imageService.deleteList(post.getBoastImgUrlList());//기존에 올린 파일 지우기
         }
         // 경로 삭제
         postRepository.delete(post);

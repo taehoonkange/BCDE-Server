@@ -28,6 +28,7 @@ public class MemberServiceImpl implements MemberService{
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final ImageHandler imageHandler;
+    private final ImageService imageService;
 
     /**
      * 회원가입 로직
@@ -36,25 +37,43 @@ public class MemberServiceImpl implements MemberService{
      */
     @Override
     public void signUp(MemberSignUpDto memberSignUpDto, MultipartFile profileImg) throws Exception {
-        String profileImgUrl = imageHandler.parseFileInfo(profileImg);
-        log.info("프로필 사진 이미지 url : {}", profileImgUrl);
 
-        Member member = Member.builder()
-                .username(memberSignUpDto.getUsername())
-                .password(memberSignUpDto.getPassword())
-                .nickName(memberSignUpDto.getNickName())
-                .profileImgUrl(profileImgUrl)
-                .build();
-
-        member.addUserAuthority();
-        member.encodePassword(passwordEncoder);
-
-
+        // ID가 이미 존재한다면 회원 중복 예외 발생
         if(memberRepository.findByUsername(memberSignUpDto.getUsername()).isPresent()){
             throw new MemberException(MemberExceptionType.ALREADY_EXIST_USERNAME);
         }
 
-        memberRepository.save(member);
+        // profileImg가 들어온다면, member 객체 빌더로 생성 시 profileImg도 생성하여 DB에 저장
+        if(profileImg != null) {
+            String profileImgUrl = imageHandler.parseFileInfo(profileImg);
+            log.info("프로필 사진 이미지 url : {}", profileImgUrl);
+
+            Member member = Member.builder()
+                    .username(memberSignUpDto.getUsername())
+                    .password(memberSignUpDto.getPassword())
+                    .nickName(memberSignUpDto.getNickName())
+                    .profileImgUrl(profileImgUrl)
+                    .build();
+
+            member.addUserAuthority();
+            member.encodePassword(passwordEncoder);
+
+            memberRepository.save(member);
+
+        // profileImg가 들어오지 않는다면, member 객체 빌더로 생성 시 profileImg를 제외하고 생성하여 DB에 저장
+        } else {
+            Member member = Member.builder()
+                    .username(memberSignUpDto.getUsername())
+                    .password(memberSignUpDto.getPassword())
+                    .nickName(memberSignUpDto.getNickName())
+                    .build();
+
+            member.addUserAuthority();
+            member.encodePassword(passwordEncoder);
+
+            memberRepository.save(member);
+        }
+
     }
 
     /**
@@ -63,17 +82,36 @@ public class MemberServiceImpl implements MemberService{
      * 닉네임, 프로필 사진 둘 중 아무것도 안 보냈을 때 예외 발생
      */
     @Override
-    public void update(MemberUpdateDto memberUpdateDto) throws Exception {
+    public void update(MemberUpdateDto memberUpdateDto, MultipartFile updateProfileImg) throws Exception {
         Member member = memberRepository.findByUsername(SecurityUtil.getLoginUsername()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
-        if(memberUpdateDto.getNickName() != null) member.updateNickName(memberUpdateDto.getNickName());
-        if(memberUpdateDto.getProfileImgUrl() != null) member.updateProfileImgUrl(memberUpdateDto.getProfileImgUrl());
+        // DTO가 요청됐고,
+        if (memberUpdateDto != null) {
+            // DTO안의 닉네임도 정상적으로 요청됐다면, 업데이트
+            if (memberUpdateDto.getNickName() != null) member.updateNickName(memberUpdateDto.getNickName());
 
-        if(memberUpdateDto.getNickName() == null && memberUpdateDto.getProfileImgUrl() == null) {
+            // DTO는 있으나 안에 NickName이 없고, 이미지도 요청 X인 경우
+            if (memberUpdateDto.getNickName() == null && updateProfileImg == null) { // dto.getNickName() == null : dtd에서 nickName이 없을 경우
+                throw new MemberException(MemberExceptionType.MEMBER_UPDATE_INFO_NOT_FOUND);
+            }
+        }
+
+        // DTO 자체도 요청 X, 이미지도 요청 X인 경우
+        if (memberUpdateDto == null && updateProfileImg == null) {
             throw new MemberException(MemberExceptionType.MEMBER_UPDATE_INFO_NOT_FOUND);
         }
-    }
 
+
+        // 업데이트 요청에 프로필 사진 이미지가 있다면,
+        if (updateProfileImg != null) {
+            String updateProfileImgUrl = imageHandler.parseFileInfo(updateProfileImg);
+            // 기존 member의 이미지가 있다면
+            if (member.getProfileImgUrl() != null) {
+                imageService.delete(member.getProfileImgUrl()); // 기존에 올린 파일 저장소에서 지우기
+                member.updateProfileImgUrl(updateProfileImgUrl); // DB에 업데이트 이미지로 수정
+            }
+        }
+    }
 
     /**
      * 비밀번호 변경 로직

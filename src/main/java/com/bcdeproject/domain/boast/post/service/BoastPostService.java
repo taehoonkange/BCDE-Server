@@ -1,6 +1,6 @@
 package com.bcdeproject.domain.boast.post.service;
 
-import com.bcdeproject.domain.boast.post.condition.BoastPostSearchCondition;
+import com.bcdeproject.global.condition.BoastPostSearchCondition;
 import com.bcdeproject.domain.boast.post.dto.BoastPostInfoDto;
 import com.bcdeproject.domain.boast.post.dto.BoastPostPagingDto;
 import com.bcdeproject.domain.boast.post.dto.BoastPostSaveDto;
