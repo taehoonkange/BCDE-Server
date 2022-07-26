@@ -28,6 +28,7 @@ public class MemberServiceImpl implements MemberService{
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final ImageHandler imageHandler;
+    private final ImageService imageService;
 
     /**
      * 회원가입 로직
@@ -63,13 +64,24 @@ public class MemberServiceImpl implements MemberService{
      * 닉네임, 프로필 사진 둘 중 아무것도 안 보냈을 때 예외 발생
      */
     @Override
-    public void update(MemberUpdateDto memberUpdateDto) throws Exception {
+    public void update(MemberUpdateDto memberUpdateDto, MultipartFile updateProfileImg) throws Exception {
         Member member = memberRepository.findByUsername(SecurityUtil.getLoginUsername()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
-        if(memberUpdateDto.getNickName() != null) member.updateNickName(memberUpdateDto.getNickName());
-        if(memberUpdateDto.getProfileImgUrl() != null) member.updateProfileImgUrl(memberUpdateDto.getProfileImgUrl());
+        String updateProfileImgUrl = imageHandler.parseFileInfo(updateProfileImg);
 
-        if(memberUpdateDto.getNickName() == null && memberUpdateDto.getProfileImgUrl() == null) {
+        // 업데이트 요청에 프로필 사진 이미지가 있다면,
+        if(updateProfileImg != null) {
+            // 기존 member의 이미지가 있다면
+            if(member.getProfileImgUrl() != null){
+                imageService.delete(member.getProfileImgUrl()); // 기존에 올린 파일 저장소에서 지우기
+                member.updateProfileImgUrl(updateProfileImgUrl); // DB에 업데이트 이미지로 수정
+            }
+        }
+
+
+        if(memberUpdateDto.getNickName() != null) member.updateNickName(memberUpdateDto.getNickName());
+
+        if(memberUpdateDto.getNickName() == null && updateProfileImg == null) {
             throw new MemberException(MemberExceptionType.MEMBER_UPDATE_INFO_NOT_FOUND);
         }
     }

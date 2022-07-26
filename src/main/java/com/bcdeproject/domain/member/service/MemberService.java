@@ -16,7 +16,7 @@ public interface MemberService {
 
     void signUp(MemberSignUpDto memberSignUpDto, MultipartFile profileImg) throws Exception;
 
-    void update(MemberUpdateDto memberUpdateDto) throws Exception;
+    void update(MemberUpdateDto memberUpdateDto, MultipartFile updateProfileImg) throws Exception;
 
     void updatePassword(String checkPassword, String toBePassword) throws Exception;
 
