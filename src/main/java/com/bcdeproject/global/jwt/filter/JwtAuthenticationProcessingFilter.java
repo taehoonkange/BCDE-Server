@@ -23,7 +23,7 @@ import java.io.IOException;
 /**
  * Jwt 인증 필터
  * 1. 둘 다 유효한 경우 -> AccessToken재발급, 인증은 진행하지 않음.
- * 2. RefreshToken은 유효하고, AccessToken은 없거나 유효하지 않은 경우 -> AccessToken 재발급
+ * 2. RefreshToken은 유효하고, AccessToken은 없거나 유효하지 않은 경우 -> AccessToken 재발급 : 응답 헤더에 재발급
  * 3. RefreshToken은 없거나 유효하지 않고, AccessToken은 유효한 경우 -> 인증은 성공되나, RefreshToken을 재발급하지는 않음
  * 4. RefreshToken과 AccessToken 모두 없거나 유효하지 않은 경우 -> 인증에 실패합니다. 403을 제공
  */

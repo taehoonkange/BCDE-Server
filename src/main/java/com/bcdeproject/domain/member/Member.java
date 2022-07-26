@@ -2,10 +2,10 @@ package com.bcdeproject.domain.member;
 
 import com.bcdeproject.domain.BaseTimeEntity;
 import com.bcdeproject.domain.boast.comment.BoastComment;
-import com.bcdeproject.domain.boast.hashtag.BoastHashTag;
 import com.bcdeproject.domain.boast.heart.BoastHeart;
-import com.bcdeproject.domain.boast.imgpath.BoastImgPath;
+import com.bcdeproject.domain.boast.imgurl.BoastImgUrl;
 import com.bcdeproject.domain.boast.post.BoastPost;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -36,8 +36,8 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false, length = 30)
     private String nickName;//별명
 
-    @Column(nullable = false, length = 30)
-    private String profileImgPath; // 프로필 사진
+    @Column(length = 3000)
+    private String profileImgUrl; // 프로필 사진
 
     @Column(length = 1000)
     private String refreshToken;//RefreshToken
@@ -54,17 +54,13 @@ public class Member extends BaseTimeEntity {
     @Builder.Default
     private List<BoastComment> boastCommentList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "writer", cascade = ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<BoastHashTag> boastHashTagList = new ArrayList<>();
-
     @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
     @Builder.Default
     private List<BoastHeart> boastHeartList = new ArrayList<>();
 
     @OneToMany(mappedBy = "writer", cascade = ALL, orphanRemoval = true)
     @Builder.Default
-    private List<BoastImgPath> boastImgPathList = new ArrayList<>();
+    private List<BoastImgUrl> boastImgUrlList = new ArrayList<>();
 
 //    @OneToMany(mappedBy = "writer", cascade = ALL, orphanRemoval = true)
 //    private List<VotePost> votePostList = new ArrayList<>();
@@ -88,14 +84,9 @@ public class Member extends BaseTimeEntity {
         boastHeartList.add(boastHeart);
     }
 
-    public void addBoastHashTag(BoastHashTag boastHashTag) {
-        //hashtag의 writer 설정은 hashtag에서 함
-        boastHashTagList.add(boastHashTag);
-    }
-
-    public void addBoastImgPath(BoastImgPath boastImgPath) {
-        //imgPath의 writer 설정은 imgPath에서 함
-        boastImgPathList.add(boastImgPath);
+    public void addBoastImgUrl(BoastImgUrl boastImgUrl) {
+        //imgUrl의 writer 설정은 imgUrl에서 함
+        boastImgUrlList.add(boastImgUrl);
     }
 
 
@@ -123,8 +114,8 @@ public class Member extends BaseTimeEntity {
         this.nickName = nickName;
     }
 
-    public void updateProfileImgPath(String profileImgPath){
-        this.profileImgPath = profileImgPath;
+    public void updateProfileImgUrl(String profileImgUrl){
+        this.profileImgUrl = profileImgUrl;
     }
 
     public void updateRefreshToken(String refreshToken){

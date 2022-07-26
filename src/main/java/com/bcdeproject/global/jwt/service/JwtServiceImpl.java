@@ -119,7 +119,7 @@ public class JwtServiceImpl implements JwtService{
 
         setAccessTokenHeader(response, accessToken);
         setRefreshTokenHeader(response, refreshToken);
-
+        log.info("Access Token, Refresh Token 헤더 설정 완료");
 
         Map<String, String> tokenMap = new HashMap<>();
         tokenMap.put(ACCESS_TOKEN_SUBJECT, accessToken);
@@ -135,7 +135,7 @@ public class JwtServiceImpl implements JwtService{
         response.setStatus(HttpServletResponse.SC_OK);
 
         setAccessTokenHeader(response, accessToken);
-
+        log.info("재발급된 Access Token : {}", accessToken);
 
         Map<String, String> tokenMap = new HashMap<>();
         tokenMap.put(ACCESS_TOKEN_SUBJECT, accessToken);

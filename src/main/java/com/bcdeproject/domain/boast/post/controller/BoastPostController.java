@@ -1,19 +1,26 @@
 package com.bcdeproject.domain.boast.post.controller;
 
-import com.bcdeproject.domain.boast.post.condition.BoastPostSearchCondition;
+import com.bcdeproject.global.condition.BoastPostSearchCondition;
 import com.bcdeproject.domain.boast.post.dto.BoastPostSaveDto;
 import com.bcdeproject.domain.boast.post.dto.BoastPostUpdateDto;
 import com.bcdeproject.domain.boast.post.service.BoastPostService;
+import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/boastPost")
 public class BoastPostController {
 
     private final BoastPostService boastPostService;
@@ -22,29 +29,49 @@ public class BoastPostController {
     /**
      * 게시글 저장
      */
+    @Operation(summary = "자랑 게시물 저장 API", description = "자랑 게시물 저장 API Example")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "요청 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+            @ApiResponse(responseCode = "500", description = "서버 에러"),
+    })
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/post")
-    public void save(@Valid @RequestBody BoastPostSaveDto boastPostSaveDto) throws Exception {
-        boastPostService.save(boastPostSaveDto);
+    @PostMapping
+    public void save(@Valid @RequestPart BoastPostSaveDto boastPostSaveDto,
+                                 @RequestPart(required = false) @ApiParam(value = "게시물 저장 이미지들") List<MultipartFile> uploadImg) throws Exception {
+        boastPostService.save(boastPostSaveDto, uploadImg);
     }
 
     /**
      * 게시글 수정
      */
+    @Operation(summary = "자랑 게시물 수정 API", description = "자랑 게시물 수정 API Example")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "요청 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+            @ApiResponse(responseCode = "500", description = "서버 에러"),
+    })
     @ResponseStatus(HttpStatus.OK)
-    @PatchMapping("/post/{postId}")
-    public void update(@PathVariable("postId") Long postId,
-                       @RequestBody BoastPostUpdateDto boastPostUpdateDto) throws Exception {
+    @PatchMapping("/{boastPostId}")
+    public void update(@PathVariable("boastPostId") @ApiParam(value = "자랑 게시물 식별 ID") Long postId,
+                       @RequestPart BoastPostUpdateDto boastPostUpdateDto,
+                       @RequestPart(required = false) @ApiParam(value = "수정할 이미지들") List<MultipartFile> updateImg) throws Exception {
 
-        boastPostService.update(postId, boastPostUpdateDto);
+        boastPostService.update(postId, boastPostUpdateDto, updateImg);
     }
 
     /**
      * 게시글 삭제
      */
+    @Operation(summary = "자랑 게시물 삭제 API", description = "자랑 게시물 삭제 API Example")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "요청 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+            @ApiResponse(responseCode = "500", description = "서버 에러"),
+    })
     @ResponseStatus(HttpStatus.OK)
-    @DeleteMapping("/post/{postId}")
-    public void delete(@PathVariable("postId") Long postId){
+    @DeleteMapping("/{boastPostId}")
+    public void delete(@PathVariable("boastPostId") @ApiParam(value = "자랑 게시물 식별 ID") Long postId){
         boastPostService.delete(postId);
     }
 
@@ -52,15 +79,27 @@ public class BoastPostController {
     /**
      * 게시글 조회
      */
-    @GetMapping("/post/{postId}")
-    public ResponseEntity getInfo(@PathVariable("postId") Long postId){
+    @Operation(summary = "자랑 게시물 조회 API", description = "자랑 게시물 조회 API Example")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "요청 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+            @ApiResponse(responseCode = "500", description = "서버 에러"),
+    })
+    @GetMapping("/{boastPostId}")
+    public ResponseEntity getInfo(@PathVariable("boastPostId") @ApiParam(value = "자랑 게시물 식별 ID") Long postId){
         return ResponseEntity.ok(boastPostService.getPostInfo(postId));
     }
 
     /**
      * 게시글 검색
      */
-    @GetMapping("/post/search")
+    @Operation(summary = "자랑 게시물 검색 API", description = "자랑 게시물 검색 API Example")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "요청 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+            @ApiResponse(responseCode = "500", description = "서버 에러"),
+    })
+    @GetMapping("/search")
     public ResponseEntity search(Pageable pageable,
                                  @RequestBody BoastPostSearchCondition boastPostSearchCondition){
 

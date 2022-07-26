@@ -4,8 +4,10 @@ import com.bcdeproject.domain.BaseTimeEntity;
 import com.bcdeproject.domain.boast.comment.BoastComment;
 import com.bcdeproject.domain.boast.hashtag.BoastHashTag;
 import com.bcdeproject.domain.boast.heart.BoastHeart;
-import com.bcdeproject.domain.boast.imgpath.BoastImgPath;
+import com.bcdeproject.domain.boast.imgurl.BoastImgUrl;
 import com.bcdeproject.domain.member.Member;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -55,7 +57,7 @@ public class BoastPost extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "post", cascade = ALL, orphanRemoval = true)
     @Builder.Default
-    private List<BoastImgPath> boastImgPathList = new ArrayList<>();
+    private List<BoastImgUrl> boastImgUrlList = new ArrayList<>();
 
 
     // 연관 관계 편의 메소드
@@ -76,8 +78,12 @@ public class BoastPost extends BaseTimeEntity {
         boastHeartList.add(boastHeart);
     }
 
-    public void addBoastImgPath(BoastImgPath boastImgPath) {
-        boastImgPathList.add(boastImgPath);
+    public void addBoastImgUrl(BoastImgUrl boastImgUrl) {
+        boastImgUrlList.add(boastImgUrl);
+    }
+
+    public void removeBoastImgUrl(BoastImgUrl boastImgUrl) {
+        boastImgUrlList.remove(boastImgUrl);
     }
 
     // 내용 수정
