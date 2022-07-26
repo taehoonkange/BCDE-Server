@@ -35,7 +35,7 @@ public class MemberController {
     })
     @PostMapping("/signUp")
     @ResponseStatus(HttpStatus.OK)
-    public void signUp(@Valid @RequestPart @ApiParam(value = "회원 회원가입 항목", required = true) MemberSignUpDto memberSignUpDto,
+    public void signUp(@Valid @RequestPart MemberSignUpDto memberSignUpDto,
                        @RequestPart (required = false) @ApiParam(value = "회원 프로필 사진") MultipartFile profileImg) throws Exception {
         memberService.signUp(memberSignUpDto, profileImg);
     }
@@ -53,7 +53,7 @@ public class MemberController {
     })
     @PatchMapping("/member")
     @ResponseStatus(HttpStatus.OK)
-    public void updateBasicInfo(@Valid @RequestPart(required = false) @ApiParam(value = "회원 수정 항목") MemberUpdateDto memberUpdateDto,
+    public void updateBasicInfo(@Valid @RequestPart(required = false) MemberUpdateDto memberUpdateDto,
                                 @RequestPart(required = false) @ApiParam(value = "프로필 사진 수정 이미지") MultipartFile updateProfileImg) throws Exception {
         memberService.update(memberUpdateDto, updateProfileImg);
     }
@@ -71,7 +71,7 @@ public class MemberController {
     })
     @PatchMapping("/member/password")
     @ResponseStatus(HttpStatus.OK)
-    public void updatePassword(@Valid @RequestBody @ApiParam(value = "비밀번호 수정 항목") UpdatePasswordDto updatePasswordDto) throws Exception {
+    public void updatePassword(@Valid @RequestBody UpdatePasswordDto updatePasswordDto) throws Exception {
         memberService.updatePassword(updatePasswordDto.getCheckPassword(),updatePasswordDto.getToBePassword());
     }
 
@@ -89,7 +89,7 @@ public class MemberController {
     })
     @DeleteMapping("/member")
     @ResponseStatus(HttpStatus.OK)
-    public void withdraw(@Valid @RequestBody @ApiParam(value = "회원 탈퇴 항목") MemberWithdrawDto memberWithdrawDto) throws Exception {
+    public void withdraw(@Valid @RequestBody MemberWithdrawDto memberWithdrawDto) throws Exception {
         memberService.withdraw(memberWithdrawDto.getCheckPassword());
     }
 
