@@ -11,5 +11,8 @@ public interface ImageService {
     //저장된 파일 경로 반환
     String save(MultipartFile multipartFile) throws ImageException;
 
-    void delete(List<BoastImgUrl> imgUrls);
+    void deleteList(List<BoastImgUrl> imgUrls);
+
+    void delete(String imgUrl);
+
 }

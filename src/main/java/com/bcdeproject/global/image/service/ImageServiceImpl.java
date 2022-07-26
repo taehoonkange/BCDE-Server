@@ -39,7 +39,7 @@ public class ImageServiceImpl implements ImageService{
     }
 
     @Override
-    public void delete(List<BoastImgUrl> imgUrls) {
+    public void deleteList(List<BoastImgUrl> imgUrls) {
         
         for(BoastImgUrl imgUrl : imgUrls) {
             String extract_imgUrl = imgUrl.getImgUrl();
@@ -50,9 +50,14 @@ public class ImageServiceImpl implements ImageService{
             }
         }
 
+    }
 
-
-
-
+    @Override
+    public void delete(String imgUrl) {
+        File file = new File(imgUrl);
+        // file.delete()를 한 순간, 파일이 있으면 삭제되고, 없으면 예외 발생
+        if(!file.delete()) {
+            throw new ImageException(ImageExceptionType.IMAGE_CAN_NOT_DELETE);
+        }
     }
 }
