@@ -34,7 +34,7 @@ public class MemberController {
      */
     @PatchMapping("/member")
     @ResponseStatus(HttpStatus.OK)
-    public void updateBasicInfo(@Valid @RequestPart MemberUpdateDto memberUpdateDto,
+    public void updateBasicInfo(@Valid @RequestPart(required = false) MemberUpdateDto memberUpdateDto,
                                 @RequestPart(required = false) MultipartFile updateProfileImg) throws Exception {
         memberService.update(memberUpdateDto, updateProfileImg);
     }

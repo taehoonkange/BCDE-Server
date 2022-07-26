@@ -67,24 +67,33 @@ public class MemberServiceImpl implements MemberService{
     public void update(MemberUpdateDto memberUpdateDto, MultipartFile updateProfileImg) throws Exception {
         Member member = memberRepository.findByUsername(SecurityUtil.getLoginUsername()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
+        // DTO가 요청됐고,
+        if (memberUpdateDto != null) {
+            // DTO안의 닉네임도 정상적으로 요청됐다면, 업데이트
+            if (memberUpdateDto.getNickName() != null) member.updateNickName(memberUpdateDto.getNickName());
+
+            // DTO는 있으나 안에 NickName이 없고, 이미지도 요청 X인 경우
+            if (memberUpdateDto.getNickName() == null && updateProfileImg == null) { // dto.getNickName() == null : dtd에서 nickName이 없을 경우
+                throw new MemberException(MemberExceptionType.MEMBER_UPDATE_INFO_NOT_FOUND);
+            }
+        }
+
+        // DTO 자체도 요청 X, 이미지도 요청 X인 경우
+        if (memberUpdateDto == null && updateProfileImg == null) {
+            throw new MemberException(MemberExceptionType.MEMBER_UPDATE_INFO_NOT_FOUND);
+        }
+
+
         // 업데이트 요청에 프로필 사진 이미지가 있다면,
-        if(updateProfileImg != null) {
+        if (updateProfileImg != null) {
             String updateProfileImgUrl = imageHandler.parseFileInfo(updateProfileImg);
             // 기존 member의 이미지가 있다면
-            if(member.getProfileImgUrl() != null){
+            if (member.getProfileImgUrl() != null) {
                 imageService.delete(member.getProfileImgUrl()); // 기존에 올린 파일 저장소에서 지우기
                 member.updateProfileImgUrl(updateProfileImgUrl); // DB에 업데이트 이미지로 수정
             }
         }
-
-
-        if(memberUpdateDto.getNickName() != null) member.updateNickName(memberUpdateDto.getNickName());
-
-        if(memberUpdateDto.getNickName() == null && updateProfileImg == null) {
-            throw new MemberException(MemberExceptionType.MEMBER_UPDATE_INFO_NOT_FOUND);
-        }
     }
-
 
     /**
      * 비밀번호 변경 로직
