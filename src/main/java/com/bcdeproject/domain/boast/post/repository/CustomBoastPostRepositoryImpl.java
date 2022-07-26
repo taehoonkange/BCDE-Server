@@ -1,10 +1,7 @@
 package com.bcdeproject.domain.boast.post.repository;
 
-import com.bcdeproject.domain.boast.comment.QBoastComment;
-import com.bcdeproject.domain.boast.hashtag.QBoastHashTag;
 import com.bcdeproject.domain.boast.post.BoastPost;
-import com.bcdeproject.domain.boast.post.QBoastPost;
-import com.bcdeproject.domain.boast.post.condition.BoastPostSearchCondition;
+import com.bcdeproject.global.condition.BoastPostSearchCondition;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -17,7 +14,6 @@ import javax.persistence.EntityManager;
 
 import java.util.List;
 
-import static com.bcdeproject.domain.boast.hashtag.QBoastHashTag.boastHashTag;
 import static com.bcdeproject.domain.boast.post.QBoastPost.boastPost;
 import static com.bcdeproject.domain.member.QMember.member;
 
