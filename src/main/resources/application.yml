@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url : jdbc:mysql://localhost:3306/bc'de?characterEncoding=UTF-8&serverTimezone=UTC&autoReconnect=true
-    username : root
-    password : root
+    url : jdbc:mysql://bcde-rds-instance.c2xonyrh3m6y.ap-northeast-2.rds.amazonaws.com:3306/bcde_test?characterEncoding=UTF-8&serverTimezone=UTC&autoReconnect=true
+    username : admin
+    password : bcdetest
 
   data:
     web:
