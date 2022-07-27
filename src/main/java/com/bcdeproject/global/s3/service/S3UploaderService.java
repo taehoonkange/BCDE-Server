@@ -14,6 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -37,6 +39,9 @@ public class S3UploaderService {
 
     // S3 이미지 저장 폴더 이름
     private String dirName = "image";
+
+    // 삭제시 요청 URL에서 제외할 URL
+    private String deleteUrl = "https://bcde-bucket.s3.ap-northeast-2.amazonaws.com/";
 
     private final AmazonS3 amazonS3Client;
 
@@ -69,6 +74,27 @@ public class S3UploaderService {
         return uploadImageUrl;
     }
 
+    public List<String> uploadList(List<MultipartFile> multipartFileList) throws IOException {
+
+        // 반환을 할 이미지 리스트
+        List<String> imgUrlList = new ArrayList<>();
+
+        // 이미지가 빈 것이 들어오면 빈 것을 반환
+        if (multipartFileList.isEmpty()) {
+            return imgUrlList;
+        }
+
+        for (MultipartFile multipartFile : multipartFileList) {
+            File uploadFile = convert(multipartFile)
+                    .orElseThrow(() -> new IllegalArgumentException("error: MultipartFile -> File convert fail"));
+
+            String imgUrl = upload(uploadFile);
+            imgUrlList.add(imgUrl);
+        }
+
+        return imgUrlList;
+    }
+
     // S3로 업로드
     private String putS3(File uploadFile, String fileName) {
         amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
@@ -84,8 +110,11 @@ public class S3UploaderService {
         log.info("File delete fail");
     }
 
+    // DB에 저장된 URL이 fileName으로 들어옴 : https://bcde-bucket.s3.ap-northeast-2.amazonaws.com/image/~~
+    // deleteObject의 delete Key는 https://bcde-bucket.s3.ap-northeast-2.amazonaws.com/을 제외한 image/~~ 이므로 URL 수정
     public void deleteOriginalFile(String fileName) {
-        amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, fileName));
+        String final_fileName = fileName.toString().replace(deleteUrl, "");
+        amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, final_fileName));
     }
 
     /**
