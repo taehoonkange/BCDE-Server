@@ -117,6 +117,13 @@ public class S3UploaderService {
         amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, final_fileName));
     }
 
+    public void deleteOriginalFileList(List<String> fileNameList) {
+        for(String fileName : fileNameList) {
+            String final_fileName = fileName.replace(deleteUrl, "");
+            amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, final_fileName));
+        }
+    }
+
     /**
      * @param multipartFile
      * 로컬에 파일 저장하기
