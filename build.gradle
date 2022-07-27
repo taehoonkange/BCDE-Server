@@ -33,8 +33,10 @@ dependencies {
 	implementation 'io.springfox:springfox-swagger-ui:3.0.0'
 
 	//QueryDSL 추가
-	implementation 'com.querydsl:querydsl-jpa:5.0.0'
-	annotationProcessor group: 'com.querydsl', name: 'querydsl-apt', version: '5.0.0'
+	implementation "com.querydsl:querydsl-core:5.0.0"
+	implementation "com.querydsl:querydsl-jpa:5.0.0"
+	implementation "com.querydsl:querydsl-apt:5.0.0"
+	annotationProcessor("com.querydsl:querydsl-apt:5.0.0:jpa")
 
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'mysql:mysql-connector-java'
