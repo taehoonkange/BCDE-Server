@@ -5,6 +5,8 @@ import com.bcdeproject.domain.member.dto.MemberSignUpDto;
 import com.bcdeproject.domain.member.dto.MemberUpdateDto;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Optional;
+
 public interface MemberService {
 
     /**

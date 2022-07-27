@@ -18,6 +18,7 @@ import com.bcdeproject.domain.member.exception.MemberExceptionType;
 import com.bcdeproject.domain.member.repository.MemberRepository;
 import com.bcdeproject.global.image.handler.ImageHandler;
 import com.bcdeproject.global.image.service.ImageService;
+import com.bcdeproject.global.s3.service.S3UploaderService;
 import com.bcdeproject.global.util.security.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +41,7 @@ public class BoastPostServiceImpl implements BoastPostService{
     private final BoastImgUrlRepository boastImgUrlRepository;
     private final ImageService imageService;
     private final ImageHandler imageHandler;
+    private final S3UploaderService s3UploaderService;
 
     @Override
     public void save(BoastPostSaveDto postSaveDto, List<MultipartFile> uploadImg) throws Exception {
@@ -116,7 +119,7 @@ public class BoastPostServiceImpl implements BoastPostService{
         if(updateImg != null) {
             // 기존 post의 이미지가 있다면
             if(post.getBoastImgUrlList() != null){
-                imageService.deleteList(post.getBoastImgUrlList());//기존에 올린 파일 지우기
+                // 기존에 올린 파일 S3, DB에서 삭제
                 imgListDelete(post);
 
 
@@ -131,7 +134,7 @@ public class BoastPostServiceImpl implements BoastPostService{
 
     // 이미지 String(경로)로 변환 후 이미지마다 BoastImgUrl 객체 빌더로 생성해서 post에 addBoastImgUrl로 저장
     public void imgListSave(BoastPost post, List<MultipartFile> uploadImgs) throws Exception {
-        List<String> imgUrls = imageHandler.parseFileListInfo(uploadImgs);
+        List<String> imgUrls = s3UploaderService.uploadList(uploadImgs);
         for (String imgUrl : imgUrls) {
             BoastImgUrl boastImgUrl = BoastImgUrl.builder()
                     .imgUrl(imgUrl)
@@ -142,14 +145,16 @@ public class BoastPostServiceImpl implements BoastPostService{
         }
     }
 
-    // 해당 post id로 find하여 이미지들을 찾은 후 반복문을 돌면서 DB에서 삭제
+    // 해당 post id로 find하여 이미지들을 찾은 후 반복문을 돌면서 DB와 S3에서 삭제
     public void imgListDelete(BoastPost post) throws Exception {
         List<BoastImgUrl> imgUrls = boastImgUrlRepository.findByPost(post);
         for(BoastImgUrl imgUrl : imgUrls) {
             log.info("삭제할 BoastImgUrl = {}", imgUrls.get(0).getImgUrl());
             // DB에서 삭제하기 위해서는 부모 객체의 자식 List를 remove하면 자동으로 삭제된다.
             post.removeBoastImgUrl(imgUrl);
-//            boastImgUrlRepository.delete(imgUrl);
+            //            boastImgUrlRepository.delete(imgUrl);
+            s3UploaderService.deleteOriginalFile(imgUrl.getImgUrl());
+
         }
 
     }
@@ -173,9 +178,11 @@ public class BoastPostServiceImpl implements BoastPostService{
 
         checkAuthority(post, BoastPostExceptionType.NOT_AUTHORITY_DELETE_POST);
 
-        // 파일(로컬)과 경로(DB) 둘 다 삭제
-        if(post.getBoastImgUrlList() !=null){
-            imageService.deleteList(post.getBoastImgUrlList());//기존에 올린 파일 지우기
+        // 파일(S3)과 경로(DB) 둘 다 삭제
+        if(post.getBoastImgUrlList() != null){
+            List<String> imgUrls = post.getBoastImgUrlList().stream()
+                    .map(boastImgUrl -> boastImgUrl.getImgUrl()).collect(Collectors.toList());
+            s3UploaderService.deleteOriginalFileList(imgUrls);
         }
         // 경로 삭제
         postRepository.delete(post);
