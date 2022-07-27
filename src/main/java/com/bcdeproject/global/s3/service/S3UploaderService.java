@@ -113,7 +113,7 @@ public class S3UploaderService {
     // DB에 저장된 URL이 fileName으로 들어옴 : https://bcde-bucket.s3.ap-northeast-2.amazonaws.com/image/~~
     // deleteObject의 delete Key는 https://bcde-bucket.s3.ap-northeast-2.amazonaws.com/을 제외한 image/~~ 이므로 URL 수정
     public void deleteOriginalFile(String fileName) {
-        String final_fileName = fileName.toString().replace(deleteUrl, "");
+        String final_fileName = fileName.replace(deleteUrl, "");
         amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, final_fileName));
     }
 
