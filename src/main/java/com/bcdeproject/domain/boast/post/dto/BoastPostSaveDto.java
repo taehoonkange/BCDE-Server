@@ -29,6 +29,5 @@ public class BoastPostSaveDto {
     private String content;
 
     @ApiModelProperty(value = "등록할 게시물 해시태그 리스트", required = true)
-    @NotBlank(message = "해시태그를 입력해주세요.")
     private List<BoastHashTagDto> hashTag;
 }
