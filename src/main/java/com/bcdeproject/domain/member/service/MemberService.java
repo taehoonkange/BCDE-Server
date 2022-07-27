@@ -5,6 +5,8 @@ import com.bcdeproject.domain.member.dto.MemberSignUpDto;
 import com.bcdeproject.domain.member.dto.MemberUpdateDto;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Optional;
+
 public interface MemberService {
 
     /**
@@ -20,7 +22,7 @@ public interface MemberService {
 
     void updatePassword(String checkPassword, String toBePassword) throws Exception;
 
-    void withdraw(String checkPassword) throws Exception;
+    void withdraw(String checkPassword, Optional<String> originalFileName) throws Exception;
 
     MemberInfoDto getInfo(Long memberId) throws Exception;
 

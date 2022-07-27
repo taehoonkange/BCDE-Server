@@ -11,11 +11,12 @@ import org.springframework.http.HttpStatus;
  */
 @Getter
 public enum MemberExceptionType implements BaseExceptionType {
-    //== 회원가입, 로그인 시 ==//
     ALREADY_EXIST_USERNAME(600, HttpStatus.CONFLICT, "이미 존재하는 아이디입니다."),
     WRONG_PASSWORD(601,HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
     NOT_FOUND_MEMBER(602, HttpStatus.NOT_FOUND, "회원 정보가 없습니다."),
-    MEMBER_UPDATE_INFO_NOT_FOUND(603, HttpStatus.BAD_REQUEST, "회원 업데이트 항목 중 적어도 하나를 입력해주세요.");
+    MEMBER_UPDATE_INFO_NOT_FOUND(603, HttpStatus.BAD_REQUEST, "회원 업데이트 항목 중 적어도 하나를 입력해주세요."),
+    MEMBER_UPDATE_ORIGINAL_IMAGE_NOT_FOUND(604, HttpStatus.BAD_REQUEST, "업데이트할 회원의 기존 프로필 사진을 입력해주세요."),
+    MEMBER_DELETE_IMAGE_NOT_FOUND(605, HttpStatus.BAD_REQUEST, "삭제할 회원의 프로필 사진을 입력해주세요.");
 
 
     private int errorCode;

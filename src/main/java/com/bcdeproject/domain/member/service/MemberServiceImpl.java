@@ -9,6 +9,7 @@ import com.bcdeproject.domain.member.exception.MemberExceptionType;
 import com.bcdeproject.domain.member.repository.MemberRepository;
 import com.bcdeproject.global.image.handler.ImageHandler;
 import com.bcdeproject.global.image.service.ImageService;
+import com.bcdeproject.global.s3.service.S3UploaderService;
 import com.bcdeproject.global.util.security.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,7 @@ public class MemberServiceImpl implements MemberService{
     private final PasswordEncoder passwordEncoder;
     private final ImageHandler imageHandler;
     private final ImageService imageService;
+    private final S3UploaderService s3UploaderService;
 
     /**
      * 회원가입 로직
@@ -38,6 +40,8 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public void signUp(MemberSignUpDto memberSignUpDto, MultipartFile profileImg) throws Exception {
 
+        log.info("프로필 사진 기존 파일 이름 : {}", profileImg.getOriginalFilename());
+
         // ID가 이미 존재한다면 회원 중복 예외 발생
         if(memberRepository.findByUsername(memberSignUpDto.getUsername()).isPresent()){
             throw new MemberException(MemberExceptionType.ALREADY_EXIST_USERNAME);
@@ -45,8 +49,9 @@ public class MemberServiceImpl implements MemberService{
 
         // profileImg가 들어온다면, member 객체 빌더로 생성 시 profileImg도 생성하여 DB에 저장
         if(profileImg != null) {
-            String profileImgUrl = imageHandler.parseFileInfo(profileImg);
+            String profileImgUrl = s3UploaderService.upload(profileImg);
             log.info("프로필 사진 이미지 url : {}", profileImgUrl);
+
 
             Member member = Member.builder()
                     .username(memberSignUpDto.getUsername())
@@ -80,11 +85,13 @@ public class MemberServiceImpl implements MemberService{
      * 회원 정보 수정 로직 (닉네임, 프로필 사진)
      * 요청 시 닉네임, 프로필 사진 하나만 보내도 OK
      * 닉네임, 프로필 사진 둘 중 아무것도 안 보냈을 때 예외 발생
+     * TODO : 추후에 기존 프로필 사진이 기본 프로필 사진일 때는 파일 삭제 안하도록 구현
      */
     @Override
     public void update(MemberUpdateDto memberUpdateDto, MultipartFile updateProfileImg) throws Exception {
         Member member = memberRepository.findByUsername(SecurityUtil.getLoginUsername()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
+        String originalFileName = memberUpdateDto.getOriginalFileName().orElseThrow(() -> new MemberException(MemberExceptionType.MEMBER_UPDATE_ORIGINAL_IMAGE_NOT_FOUND));
         // DTO가 요청됐고,
         if (memberUpdateDto != null) {
             // DTO안의 닉네임도 정상적으로 요청됐다면, 업데이트
@@ -104,10 +111,10 @@ public class MemberServiceImpl implements MemberService{
 
         // 업데이트 요청에 프로필 사진 이미지가 있다면,
         if (updateProfileImg != null) {
-            String updateProfileImgUrl = imageHandler.parseFileInfo(updateProfileImg);
+            String updateProfileImgUrl = s3UploaderService.upload(updateProfileImg);
             // 기존 member의 이미지가 있다면
             if (member.getProfileImgUrl() != null) {
-                imageService.delete(member.getProfileImgUrl()); // 기존에 올린 파일 저장소에서 지우기
+                s3UploaderService.deleteOriginalFile(originalFileName); // 기존에 올린 파일 저장소에서 지우기
                 member.updateProfileImgUrl(updateProfileImgUrl); // DB에 업데이트 이미지로 수정
             }
         }
@@ -133,17 +140,21 @@ public class MemberServiceImpl implements MemberService{
     /**
      * 회원 탈퇴 로직
      * 회원 탈퇴 시 현재 비밀번호를 체크하여 일치하면 탈퇴 진행
+     * TODO : 추후에 기본 프로필 사진일 때는 파일 삭제 안하도록 구현
      */
     @Override
-    public void withdraw(String checkPassword) throws Exception {
+    public void withdraw(String checkPassword, Optional<String> originalFileName) throws Exception {
         Member member = memberRepository.findByUsername(SecurityUtil.getLoginUsername()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
         if(!member.matchPassword(passwordEncoder, checkPassword) ) {
             throw new MemberException(MemberExceptionType.WRONG_PASSWORD);
+        } else {
+            String getOriginalFileName = originalFileName.orElseThrow(() -> new MemberException(MemberExceptionType.MEMBER_DELETE_IMAGE_NOT_FOUND));
+            s3UploaderService.deleteOriginalFile(getOriginalFileName);
+            memberRepository.delete(member);
         }
-
-        memberRepository.delete(member);
     }
+
 
 
     /**

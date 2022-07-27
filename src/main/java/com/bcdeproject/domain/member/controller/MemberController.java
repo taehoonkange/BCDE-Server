@@ -90,7 +90,7 @@ public class MemberController {
     @DeleteMapping("/member")
     @ResponseStatus(HttpStatus.OK)
     public void withdraw(@Valid @RequestBody MemberWithdrawDto memberWithdrawDto) throws Exception {
-        memberService.withdraw(memberWithdrawDto.getCheckPassword());
+        memberService.withdraw(memberWithdrawDto.getCheckPassword(), memberWithdrawDto.getOriginalFileName());
     }
 
 
