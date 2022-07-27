@@ -22,7 +22,7 @@ public interface MemberService {
 
     void updatePassword(String checkPassword, String toBePassword) throws Exception;
 
-    void withdraw(String checkPassword, Optional<String> originalFileName) throws Exception;
+    void withdraw(String checkPassword) throws Exception;
 
     MemberInfoDto getInfo(Long memberId) throws Exception;
 

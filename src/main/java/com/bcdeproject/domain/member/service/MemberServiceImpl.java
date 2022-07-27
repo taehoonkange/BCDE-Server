@@ -91,7 +91,6 @@ public class MemberServiceImpl implements MemberService{
     public void update(MemberUpdateDto memberUpdateDto, MultipartFile updateProfileImg) throws Exception {
         Member member = memberRepository.findByUsername(SecurityUtil.getLoginUsername()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
-        String originalFileName = memberUpdateDto.getOriginalFileName().orElseThrow(() -> new MemberException(MemberExceptionType.MEMBER_UPDATE_ORIGINAL_IMAGE_NOT_FOUND));
         // DTO가 요청됐고,
         if (memberUpdateDto != null) {
             // DTO안의 닉네임도 정상적으로 요청됐다면, 업데이트
@@ -114,7 +113,7 @@ public class MemberServiceImpl implements MemberService{
             String updateProfileImgUrl = s3UploaderService.upload(updateProfileImg);
             // 기존 member의 이미지가 있다면
             if (member.getProfileImgUrl() != null) {
-                s3UploaderService.deleteOriginalFile(originalFileName); // 기존에 올린 파일 저장소에서 지우기
+                s3UploaderService.deleteOriginalFile(member.getProfileImgUrl()); // 기존에 올린 파일 저장소에서 지우기
                 member.updateProfileImgUrl(updateProfileImgUrl); // DB에 업데이트 이미지로 수정
             }
         }
@@ -143,14 +142,13 @@ public class MemberServiceImpl implements MemberService{
      * TODO : 추후에 기본 프로필 사진일 때는 파일 삭제 안하도록 구현
      */
     @Override
-    public void withdraw(String checkPassword, Optional<String> originalFileName) throws Exception {
+    public void withdraw(String checkPassword) throws Exception {
         Member member = memberRepository.findByUsername(SecurityUtil.getLoginUsername()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
         if(!member.matchPassword(passwordEncoder, checkPassword) ) {
             throw new MemberException(MemberExceptionType.WRONG_PASSWORD);
         } else {
-            String getOriginalFileName = originalFileName.orElseThrow(() -> new MemberException(MemberExceptionType.MEMBER_DELETE_IMAGE_NOT_FOUND));
-            s3UploaderService.deleteOriginalFile(getOriginalFileName);
+            s3UploaderService.deleteOriginalFile(member.getProfileImgUrl());
             memberRepository.delete(member);
         }
     }
