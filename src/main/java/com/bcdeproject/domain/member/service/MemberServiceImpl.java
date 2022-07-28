@@ -91,24 +91,15 @@ public class MemberServiceImpl implements MemberService{
     public void update(MemberUpdateDto memberUpdateDto, MultipartFile updateProfileImg) throws Exception {
         Member member = memberRepository.findByUsername(SecurityUtil.getLoginUsername()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
-        // DTO가 요청됐고,
-        if (memberUpdateDto != null) {
-            // DTO안의 닉네임도 정상적으로 요청됐다면, 업데이트
+            // 닉네임이 정상적으로 요청됐다면, 업데이트
             if (memberUpdateDto.getNickName() != null) member.updateNickName(memberUpdateDto.getNickName());
 
-            // DTO는 있으나 안에 NickName이 없고, 이미지도 요청 X인 경우
+            //  닉네임, 이미지 둘 다 요청 X인 경우
             if (memberUpdateDto.getNickName() == null && updateProfileImg == null) { // dto.getNickName() == null : dtd에서 nickName이 없을 경우
                 throw new MemberException(MemberExceptionType.MEMBER_UPDATE_INFO_NOT_FOUND);
             }
-        }
 
-        // DTO 자체도 요청 X, 이미지도 요청 X인 경우
-        if (memberUpdateDto == null && updateProfileImg == null) {
-            throw new MemberException(MemberExceptionType.MEMBER_UPDATE_INFO_NOT_FOUND);
-        }
-
-
-        // 업데이트 요청에 프로필 사진 이미지가 있다면,
+        // 업데이트 요청에 프로필 사진 이미지가 있다면, 업데이트
         if (updateProfileImg != null) {
             String updateProfileImgUrl = s3UploaderService.upload(updateProfileImg);
             // 기존 member의 이미지가 있다면
