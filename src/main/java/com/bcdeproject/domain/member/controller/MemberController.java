@@ -35,7 +35,7 @@ public class MemberController {
     })
     @PostMapping("/signUp")
     @ResponseStatus(HttpStatus.OK)
-    public void signUp(@Valid @RequestBody MemberSignUpDto memberSignUpDto,
+    public void signUp(@Valid @RequestPart MemberSignUpDto memberSignUpDto,
                        @RequestPart (required = false) @ApiParam(value = "회원 프로필 사진") MultipartFile profileImg) throws Exception {
         memberService.signUp(memberSignUpDto, profileImg);
     }
@@ -53,7 +53,7 @@ public class MemberController {
     })
     @PatchMapping("/member")
     @ResponseStatus(HttpStatus.OK)
-    public void updateBasicInfo(@Valid @ModelAttribute MemberUpdateDto memberUpdateDto,
+    public void updateBasicInfo(@Valid @RequestPart MemberUpdateDto memberUpdateDto,
                                 @RequestPart(required = false) @ApiParam(value = "프로필 사진 수정 이미지") MultipartFile updateProfileImg) throws Exception {
         memberService.update(memberUpdateDto, updateProfileImg);
     }
