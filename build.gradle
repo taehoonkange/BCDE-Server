@@ -60,8 +60,7 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
-jar{
-	archiveClassifier=''
+tasks.named("jar") {
 	enabled = false
 }
 
