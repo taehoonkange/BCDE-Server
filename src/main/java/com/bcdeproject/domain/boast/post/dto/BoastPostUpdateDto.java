@@ -1,17 +1,12 @@
 package com.bcdeproject.domain.boast.post.dto;
 
-import com.bcdeproject.domain.boast.hashtag.BoastHashTag;
-import com.bcdeproject.domain.boast.hashtag.dto.BoastHashTagDto;
-import com.bcdeproject.domain.boast.imgurl.dto.BoastImgUrlDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
 import java.util.List;
-import java.util.Optional;
 
 @Data
 @NoArgsConstructor
@@ -27,5 +22,5 @@ public class BoastPostUpdateDto {
     private String content;
 
     @ApiModelProperty(value = "수정할 게시물 해시태그 리스트", required = true)
-    private List<BoastHashTagDto> hashTag;
+    private List<String> hashTag;
 }

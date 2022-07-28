@@ -4,18 +4,27 @@ import com.bcdeproject.global.condition.BoastPostSearchCondition;
 import com.bcdeproject.domain.boast.post.dto.BoastPostSaveDto;
 import com.bcdeproject.domain.boast.post.dto.BoastPostUpdateDto;
 import com.bcdeproject.domain.boast.post.service.BoastPostService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Encoding;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -24,7 +33,6 @@ import java.util.List;
 public class BoastPostController {
 
     private final BoastPostService boastPostService;
-
 
     /**
      * 게시글 저장
@@ -38,9 +46,12 @@ public class BoastPostController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public void save(@Valid @RequestPart BoastPostSaveDto boastPostSaveDto,
-                                 @RequestPart(required = false) @ApiParam(value = "게시물 저장 이미지들") List<MultipartFile> uploadImg) throws Exception {
+                     @RequestPart(required = false) @ApiParam(value = "게시물 저장 이미지들") List<MultipartFile> uploadImg) throws Exception {
+
         boastPostService.save(boastPostSaveDto, uploadImg);
     }
+
+
 
     /**
      * 게시글 수정
@@ -101,7 +112,7 @@ public class BoastPostController {
     })
     @GetMapping("/search")
     public ResponseEntity search(Pageable pageable,
-                                 @RequestBody BoastPostSearchCondition boastPostSearchCondition){
+                                 @ModelAttribute BoastPostSearchCondition boastPostSearchCondition){
 
         return ResponseEntity.ok(boastPostService.getPostList(pageable,boastPostSearchCondition));
     }

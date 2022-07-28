@@ -15,7 +15,7 @@ import java.util.Optional;
 @ApiModel(description = "회원 정보 수정 항목")
 public class MemberUpdateDto {
 
-    @ApiModelProperty(value = "회원 닉네임", required = true)
+    @ApiModelProperty(value = "회원 닉네임")
     private String nickName;
 
 }

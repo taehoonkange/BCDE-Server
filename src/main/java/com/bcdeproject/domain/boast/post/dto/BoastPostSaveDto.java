@@ -6,6 +6,7 @@ import com.bcdeproject.domain.boast.imgurl.dto.BoastImgUrlDto;
 import com.bcdeproject.domain.boast.post.BoastPost;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @ApiModel(description = "게시물 저장 항목")
 public class BoastPostSaveDto {
 
@@ -29,5 +31,6 @@ public class BoastPostSaveDto {
     private String content;
 
     @ApiModelProperty(value = "등록할 게시물 해시태그 리스트", required = true)
-    private List<BoastHashTagDto> hashTag;
+    private List<String> hashTag;
+
 }

@@ -20,6 +20,7 @@ import com.bcdeproject.global.image.handler.ImageHandler;
 import com.bcdeproject.global.image.service.ImageService;
 import com.bcdeproject.global.s3.service.S3UploaderService;
 import com.bcdeproject.global.util.security.SecurityUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -43,12 +44,14 @@ public class BoastPostServiceImpl implements BoastPostService{
     private final ImageHandler imageHandler;
     private final S3UploaderService s3UploaderService;
 
+
     @Override
     public void save(BoastPostSaveDto postSaveDto, List<MultipartFile> uploadImg) throws Exception {
         BoastPost post = BoastPost.builder()
                 .title(postSaveDto.getTitle())
                 .content(postSaveDto.getContent())
                 .build();
+
 
         // post 작성자 : 로그인한 유저 객체 저장
         post.confirmWriter(memberRepository.findByUsername(SecurityUtil.getLoginUsername())
@@ -61,10 +64,10 @@ public class BoastPostServiceImpl implements BoastPostService{
         }
 
         // post(게시글)에 해시태그 리스트 저장
-        List<BoastHashTagDto> hashTags = postSaveDto.getHashTag();
+        List<String> hashTags = postSaveDto.getHashTag();
         if(hashTags == null) log.info("해시태그 X");
         else {
-            log.info("요청 해시태그 name : {}", postSaveDto.getHashTag().get(0).getName());
+            log.info("요청 해시태그 name : {}", postSaveDto.getHashTag().toString());
             hashTagListSave(post, hashTags);
         }
 
@@ -100,7 +103,7 @@ public class BoastPostServiceImpl implements BoastPostService{
 
         // 업데이트 요청에 해시태그가 있다면,
         if(postUpdateDto.getHashTag() != null) {
-            List<BoastHashTagDto> hashTags = postUpdateDto.getHashTag();
+            List<String> hashTags = postUpdateDto.getHashTag();
             // 기존 post 해시태그 있다면
             if (post.getBoastHashTagList() != null) {
                 // 현재 post 해시태그 모두 삭제
@@ -160,10 +163,10 @@ public class BoastPostServiceImpl implements BoastPostService{
     }
 
     // 해시태그마다 BoastHashTag 객체 빌더로 생성해서 post에 addBoastHashTag로 저장
-    public void hashTagListSave(BoastPost post, List<BoastHashTagDto> hashTags) {
-        for(BoastHashTagDto hashTag: hashTags) {
+    public void hashTagListSave(BoastPost post, List<String> hashTags) {
+        for(String hashTag: hashTags) {
             BoastHashTag boastHashTag = BoastHashTag.builder()
-                    .name(hashTag.getName())
+                    .name(hashTag)
                     .post(post)
                     .build();
             post.addBoastHashTag(boastHashTag);
