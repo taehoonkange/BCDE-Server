@@ -35,7 +35,7 @@ public class MemberController {
     })
     @PostMapping("/signUp")
     @ResponseStatus(HttpStatus.OK)
-    public void signUp(@Valid @ModelAttribute MemberSignUpDto memberSignUpDto,
+    public void signUp(@Valid @RequestBody MemberSignUpDto memberSignUpDto,
                        @RequestPart (required = false) @ApiParam(value = "회원 프로필 사진") MultipartFile profileImg) throws Exception {
         memberService.signUp(memberSignUpDto, profileImg);
     }
@@ -71,7 +71,7 @@ public class MemberController {
     })
     @PatchMapping("/member/password")
     @ResponseStatus(HttpStatus.OK)
-    public void updatePassword(@Valid @ModelAttribute UpdatePasswordDto updatePasswordDto) throws Exception {
+    public void updatePassword(@Valid @RequestBody UpdatePasswordDto updatePasswordDto) throws Exception {
         memberService.updatePassword(updatePasswordDto.getCheckPassword(),updatePasswordDto.getToBePassword());
     }
 
@@ -89,7 +89,7 @@ public class MemberController {
     })
     @DeleteMapping("/member")
     @ResponseStatus(HttpStatus.OK)
-    public void withdraw(@Valid @ModelAttribute MemberWithdrawDto memberWithdrawDto) throws Exception {
+    public void withdraw(@Valid @RequestBody MemberWithdrawDto memberWithdrawDto) throws Exception {
         memberService.withdraw(memberWithdrawDto.getCheckPassword());
     }
 
