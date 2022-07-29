@@ -1,28 +1,19 @@
 language: java
 jdk:
-  - openjdk11
-
+- openjdk11
 branches:
   only:
-    - main # main branch에 push 될 때 수행
-
-# 같은 의존성 캐싱 처리할 디렉토리 설정
+  - main
 cache:
   directories:
-    - '$HOME/.m2/repository'
-    - '$HOME/.gradle'
-
-# 프로젝트 내부의 gradlew을 통해 clean & build 수행
+  - "$HOME/.m2/repository"
+  - "$HOME/.gradle"
 script: "./gradlew clean build"
-
 before_install:
-  - chmod +x gradlew
-  - openssl aes-256-cbc -K $encrypted_aca36f303415_key -iv $encrypted_aca36f303415_iv -in aws.yml.enc -out aws.yml -d
-  - openssl aes-256-cbc -K $encrypted_aca36f303415_key -iv $encrypted_aca36f303415_iv -in aws.yml.enc -out aws.yml -d
-
-
-# CI 실행 완료 시 메일로 알림
+- openssl aes-256-cbc -K $encrypted_aca36f303415_key -iv $encrypted_aca36f303415_iv
+  -in aws.yml.enc -out aws.yml -d
+- chmod +x gradlew
 notifications:
   email:
     recipients:
-      - ohk9134@naver.com
+    - ohk9134@naver.com
