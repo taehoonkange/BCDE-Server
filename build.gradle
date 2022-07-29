@@ -65,6 +65,10 @@ tasks.named("jar") {
 	enabled = false
 }
 
+wrapper {
+	gradleVersion = '7.4.1'
+}
+
 //querydsl 추가 시작
 def querydslDir = "$buildDir/generated/querydsl"
 
