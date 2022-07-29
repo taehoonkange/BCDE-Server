@@ -5,6 +5,7 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 aws.yml
+aws-test.yml
 
 ### STS ###
 .apt_generated
@@ -36,3 +37,4 @@ out/
 
 ### VS Code ###
 .vscode/
+/src/test/resources/aws-test.yml
