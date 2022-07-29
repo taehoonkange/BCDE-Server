@@ -5,6 +5,12 @@ spring:
     username : admin
     password : bcdetest
 
+  profiles:
+    group:
+      "local": "local, common"
+      "development": "development, common"
+    active: local
+
   data:
     web:
       pageable:
@@ -13,9 +19,6 @@ spring:
   mvc:
     pathmatch:
       matching-strategy : ant_path_matcher
-
-  profiles:
-    include: jwt, local
 
   jpa:
     show-sql : true
@@ -48,12 +51,17 @@ image:
   dir: D:\bcdeImg\
 
 ---
-### AWS S3 설정
-spring:
-  group:
-    "local": "local, common"
-    "development": "development, common"
-  active: local
+### JWT
+jwt:
+  secret: 'Z87f78dygVAFGV87AY78YV87vuaaf12by98g4q93q0wva0djv05Y4Q98VRUVH38YcvhYF9843Y9hfojeovhq'
+
+  access:
+    expiration: 20000
+    header: Authorization
+
+  refresh:
+    expiration: 30000
+    header: Authorization-refresh
 
 ---
 # 공통
