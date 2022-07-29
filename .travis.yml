@@ -10,11 +10,25 @@ cache:
   - "$HOME/.gradle"
 script: "./gradlew clean build"
 before_install:
-- openssl aes-256-cbc -K $encrypted_aca36f303415_key -iv $encrypted_aca36f303415_iv
-  -in aws.yml.enc -out aws.yml -d
-- chmod +x gradlew
+  - openssl aes-256-cbc -K $encrypted_aca36f303415_key -iv $encrypted_aca36f303415_iv
+    -in aws.yml.enc -out aws.yml -d
+  - chmod +x gradlew
 
+before_deploy:
+  - zip -r Server * # 현재 위치의 모든 파일을 해당이름으로 압축
+  - mkdir -p deploy
+  - mv Server.zip deploy/Server.zip
 
+deploy:
+  - provider: s3
+    access_key_id: $AWS_ACCESS_KEY # Travis repo settings에 설정된 값
+    secret_access_key: $AWS_SECRET_KEY # Travis repo settings에 설정된 값
+    bucket: bcde-bucket # S3 버킷
+    region: ap-northeast-2
+    skip_cleanup: true
+    acl: private # zip 파일 접근을 private으로
+    local_dir: deploy # before_deploy에서 생성한 디렉토리
+    wait-until-deployed: true
 
 
 notifications:
