@@ -21,7 +21,7 @@ before_install:
   - openssl aes-256-cbc -K $encrypted_aca36f303415_key -iv $encrypted_aca36f303415_iv -in ./src/test/resources/aws.yml.enc -out ./src/test/resources/aws.yml -d
 
 
-# CI 실행 완료 시 메일로 알림
+# CI 실행 완료 시 메일로 알림 가게 하기
 notifications:
   email:
     recipients:
