@@ -10,10 +10,6 @@ cache:
   - "$HOME/.gradle"
 script: "./gradlew clean build --stacktrace"
 before_install:
-- openssl aes-256-cbc -K $encrypted_687a5032d38a_key -iv $encrypted_687a5032d38a_iv
-  -in aws-test.yml.enc -out aws-test.yml -d
-- openssl aes-256-cbc -K $encrypted_aca36f303415_key -iv $encrypted_aca36f303415_iv
-  -in aws.yml.enc -out aws.yml -d
 - chmod +x gradlew
 before_deploy:
 - zip -r Server *
