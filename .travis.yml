@@ -19,28 +19,28 @@ before_deploy:
 - mkdir -p deploy
 - mv Server.zip deploy/Server.zip
 deploy:
-- provider: s3
-  access_key_id: $AWS_ACCESS_KEY
-  secret_access_key: $AWS_SECRET_KEY
-  bucket: bcde-bucket
-  region: ap-northeast-2
-  skip_cleanup: true
-  acl: private
-  local_dir: deploy
-  wait-until-deployed: true
-  on:
-    all_branches: true
+  - provider: s3
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_SECRET_KEY
+    bucket: bcde-bucket
+    region: ap-northeast-2
+    skip_cleanup: true
+    acl: private
+    local_dir: deploy
+    wait-until-deployed: true
+    on:
+      all_branches: true
 
-- provider: codedeploy
-  access_key_id: $AWS_ACCESS_KEY # Travis repo settings에 설정된 값
-  secret_access_key: $AWS_SECRET_KEY # Travis repo settings에 설정된 값
-  bucket: bcde-bucket # S3 버킷
-  key: Server.zip # 빌드 파일을 압축해서 전달
-  bundle_type: zip
-  application: bcde-project # 웹 콘솔에서 등록한 CodeDeploy 어플리케이션
-  deployment_group: bcde-project-group # 웹 콘솔에서 등록한 CodeDeploy 배포 그룹
-  region: ap-northeast-2
-  wait-until-deployed: true
+  - provider: codedeploy
+    access_key_id: $AWS_ACCESS_KEY # Travis repo settings에 설정된 값
+    secret_access_key: $AWS_SECRET_KEY # Travis repo settings에 설정된 값
+    bucket: bcde-bucket # S3 버킷
+    key: Server.zip # 빌드 파일을 압축해서 전달
+    bundle_type: zip
+    application: bcde-project # 웹 콘솔에서 등록한 CodeDeploy 어플리케이션
+    deployment_group: bcde-project-group # 웹 콘솔에서 등록한 CodeDeploy 배포 그룹
+    region: ap-northeast-2
+    wait-until-deployed: true
 
 notifications:
   email:
