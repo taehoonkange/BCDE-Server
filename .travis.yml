@@ -1,23 +1,28 @@
 language: java
 jdk:
-- openjdk11
+  - openjdk11
+  -
 branches:
   only:
-  - main
+    - main
+
 cache:
   directories:
-  - "$HOME/.m2/repository"
-  - "$HOME/.gradle"
+    - "$HOME/.m2/repository"
+    - "$HOME/.gradle"
+
 script: "./gradlew clean build --stacktrace"
+
 before_install:
-- chmod +x gradlew
-- openssl aes-256-cbc -K $encrypted_aca36f303415_key -iv $encrypted_aca36f303415_iv -in ./src/main/resources/aws.yml.enc -out ./src/main/resources/aws.yml -d
-- openssl aes-256-cbc -K $encrypted_687a5032d38a_key -iv $encrypted_687a5032d38a_iv -in ./src/test/resources/aws-test.yml.enc -out ./src/test/resources/aws-test.yml -d
+  - chmod +x gradlew
+  - openssl aes-256-cbc -K $encrypted_aca36f303415_key -iv $encrypted_aca36f303415_iv -in ./src/main/resources/aws.yml.enc -out ./src/main/resources/aws.yml -d
+  - openssl aes-256-cbc -K $encrypted_687a5032d38a_key -iv $encrypted_687a5032d38a_iv -in ./src/test/resources/aws-test.yml.enc -out ./src/test/resources/aws-test.yml -d
 
 before_deploy:
-- zip -r Server *
-- mkdir -p deploy
-- mv Server.zip deploy/Server.zip
+  - zip -r Server *
+  - mkdir -p deploy
+  - mv Server.zip deploy/Server.zip
+
 deploy:
   - provider: s3
     access_key_id: $AWS_ACCESS_KEY
@@ -41,6 +46,8 @@ deploy:
     deployment_group: bcde-project-group # 웹 콘솔에서 등록한 CodeDeploy 배포 그룹
     region: ap-northeast-2
     wait-until-deployed: true
+    on:
+      all_branches: true
 
 notifications:
   email:
