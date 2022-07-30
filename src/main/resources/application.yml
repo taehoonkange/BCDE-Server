@@ -9,7 +9,7 @@ spring:
     group:
       "local": "local, common"
       "development": "development, common"
-    active: local
+    active: development
 
   data:
     web:
