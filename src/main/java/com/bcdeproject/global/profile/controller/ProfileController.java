@@ -17,7 +17,7 @@ public class ProfileController {
     @GetMapping("/profile")
     public String profile() {
         List<String> profiles = Arrays.asList(env.getActiveProfiles());
-        List<String> developmentProfiles = Arrays.asList("development", "common", "development1", "development2");
+        List<String> developmentProfiles = Arrays.asList("development", "development1", "development2");
         String defaultProfile = profiles.isEmpty() ? "default" : profiles.get(0);
 
         return profiles.stream().filter(developmentProfiles::contains).findAny().orElse(defaultProfile);
