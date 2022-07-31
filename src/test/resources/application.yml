@@ -1,13 +1,8 @@
 spring:
   profiles:
     group:
-      "local": "local, common"
-      "development": "development, common"
-    active: development
-
-  datasource:
-    driver-class-name: org.h2.Driver
-    username: sa
+      "local": "local, common, cloud, jwt"
+    active: local
 
   data:
     web:
@@ -47,9 +42,6 @@ spring:
       enabled: true
 
 
-
-
-
 logging:
   level:
     p6spy: info
@@ -61,53 +53,6 @@ logging:
       hiberante:
         SQL: warn
 
-
-
-image:
-  dir: D:\bcdeImg\
-
----
-### JWT
-jwt:
-  secret: 'Z87f78dygVAFGV87AY78YV87vuaaf12by98g4q93q0wva0djv05Y4Q98VRUVH38YcvhYF9843Y9hfojeovhq'
-
-  access:
-    expiration: 20000
-    header: Authorization
-
-  refresh:
-    expiration: 30000
-    header: Authorization-refresh
-
----
-# 공통
-spring:
-  config:
-    activate:
-      on-profile: "common"
-    servlet:
-      multipart:
-        max-request-size: 20MB  #업로드 파일 크기 총량 제한
-        max-file-size: 2MB     #업로드 파일 크기 제한
-
----
-# AWS S3에 필요한 정보
-cloud:
-  aws:
-    region:
-      static: ap-northeast-2
-    s3:
-      bucket: bcde-bucket
-    stack:
-      auto: false
-
-logging:
-  level:
-    com:
-      amazonaws:
-        util:
-          EC2MetadataUtils: error
-
 ---
 # 로컬 환경
 spring:
@@ -115,13 +60,9 @@ spring:
   config:
     activate:
       on-profile: "local"
+
+  datasource:
+    driver-class-name: org.h2.Driver
+    username: sa
   file-dir: /src/test/resources/static/files/
 
----
-# 배포 환경
-spring:
-  environment: "development"
-  config:
-    activate:
-      on-profile: "development"
-  file-dir: /home/ec2-user/files/
