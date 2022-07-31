@@ -72,8 +72,10 @@ public class MemberController {
     })
     @PatchMapping("/member/password")
     @ResponseStatus(HttpStatus.OK)
-    public void updatePassword(@Valid @RequestBody UpdatePasswordDto updatePasswordDto) throws Exception {
+    public String updatePassword(@Valid @RequestBody UpdatePasswordDto updatePasswordDto) throws Exception {
         memberService.updatePassword(updatePasswordDto.getCheckPassword(),updatePasswordDto.getToBePassword());
+
+        return "비밀번호 수정 완료"
     }
 
 
