@@ -8,7 +8,7 @@ import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest(properties = "spring.config.location=" +
 		"classpath:/application.yml" +
-		",classpath:/aws-test.yml"
+		",classpath:/aws.yml"
 )
 @ActiveProfiles({"local"})
 class BcdeprojectApplicationTests {
