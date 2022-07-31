@@ -75,7 +75,7 @@ public class MemberController {
     public String updatePassword(@Valid @RequestBody UpdatePasswordDto updatePasswordDto) throws Exception {
         memberService.updatePassword(updatePasswordDto.getCheckPassword(),updatePasswordDto.getToBePassword());
 
-        return "비밀번호 수정 완료"
+        return "비밀번호 수정 완료";
     }
 
 
