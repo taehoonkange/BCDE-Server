@@ -8,10 +8,7 @@ import org.springframework.mock.env.MockEnvironment;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest(properties = "spring.config.location=" +
-        "classpath:/application.yml" +
-        ",classpath:/aws.yml"
-)
+@SpringBootTest
 class ProfileControllerTest {
 
     @Test
