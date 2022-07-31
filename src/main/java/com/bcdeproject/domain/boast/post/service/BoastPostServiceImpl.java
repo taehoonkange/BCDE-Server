@@ -16,8 +16,6 @@ import com.bcdeproject.domain.boast.post.repository.BoastPostRepository;
 import com.bcdeproject.domain.member.exception.MemberException;
 import com.bcdeproject.domain.member.exception.MemberExceptionType;
 import com.bcdeproject.domain.member.repository.MemberRepository;
-import com.bcdeproject.global.image.handler.ImageHandler;
-import com.bcdeproject.global.image.service.ImageService;
 import com.bcdeproject.global.s3.service.S3UploaderService;
 import com.bcdeproject.global.util.security.SecurityUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,8 +38,6 @@ public class BoastPostServiceImpl implements BoastPostService{
     private final BoastPostRepository postRepository;
     private final MemberRepository memberRepository;
     private final BoastImgUrlRepository boastImgUrlRepository;
-    private final ImageService imageService;
-    private final ImageHandler imageHandler;
     private final S3UploaderService s3UploaderService;
 
 
