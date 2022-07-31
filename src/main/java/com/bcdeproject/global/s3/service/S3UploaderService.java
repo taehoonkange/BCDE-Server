@@ -23,6 +23,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class S3UploaderService {
 
+    private final AmazonS3Client amazonS3Client;
+
     // local, development 등 현재 프로파일
     @Value("${spring.environment}")
     private String environment;
@@ -41,8 +43,6 @@ public class S3UploaderService {
 
     // 삭제시 요청 URL에서 제외할 URL
     private String deleteUrl = "https://bcde-bucket.s3.ap-northeast-2.amazonaws.com/";
-
-    private final AmazonS3Client amazonS3Client;
 
     /**
      * 서버가 시작할 때 프로파일에 맞는 파일 경로를 설정해줌
