@@ -3,6 +3,8 @@ spring:
     group:
       "local": "local, common, jwt, cloud"
       "development": "development, common, jwt, cloud, dev-db"
+      "development1": "common, jwt, cloud, dev-db"
+      "development2": "common, jwt, cloud, dev-db"
     active: development
 
 ---
