@@ -3,6 +3,7 @@ spring:
     group:
       "local": "local, common"
       "development": "development, common"
+    active: development
 
   datasource:
     driver-class-name: org.h2.Driver
