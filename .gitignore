@@ -37,4 +37,7 @@ out/
 
 ### VS Code ###
 .vscode/
-/src/test/resources/aws-test.yml
+
+### 서버 설정 파일 ###
+/src/main/resources/application-jwt.yml
+/src/main/resources/application-dev-db.yml

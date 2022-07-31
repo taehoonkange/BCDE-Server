@@ -43,7 +43,7 @@ public class BcdeprojectApplication {
 			String files = System.getProperty("user.dir") + fileDir;
 			mkdirResource(files);
 		} else if (environment.equals("development")) {
-			String filesFolder = "/var/www/html/files";
+			String filesFolder = "/home/ec2-user/files";
 			mkdirResource(filesFolder);
 		}
 	}

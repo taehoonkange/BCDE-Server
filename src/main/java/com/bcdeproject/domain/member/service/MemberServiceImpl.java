@@ -7,8 +7,6 @@ import com.bcdeproject.domain.member.dto.MemberUpdateDto;
 import com.bcdeproject.domain.member.exception.MemberException;
 import com.bcdeproject.domain.member.exception.MemberExceptionType;
 import com.bcdeproject.domain.member.repository.MemberRepository;
-import com.bcdeproject.global.image.handler.ImageHandler;
-import com.bcdeproject.global.image.service.ImageService;
 import com.bcdeproject.global.s3.service.S3UploaderService;
 import com.bcdeproject.global.util.security.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +26,6 @@ public class MemberServiceImpl implements MemberService{
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ImageHandler imageHandler;
-    private final ImageService imageService;
     private final S3UploaderService s3UploaderService;
 
     /**

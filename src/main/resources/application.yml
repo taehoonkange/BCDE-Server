@@ -1,96 +1,9 @@
 spring:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url : jdbc:mysql://bcde-rds-instance.c2xonyrh3m6y.ap-northeast-2.rds.amazonaws.com:3306/bcde_test?characterEncoding=UTF-8&serverTimezone=UTC&autoReconnect=true
-    username : admin
-    password : bcdetest
-
   profiles:
     group:
-      "local": "local, common"
-      "development": "development, common"
+      "local": "local, common, jwt, cloud"
+      "development": "development, common, jwt, cloud, dev-db"
     active: development
-
-  data:
-    web:
-      pageable:
-        default-page-size: 20  #페이징 할 때 기본값, 20개씩 조회
-
-  mvc:
-    pathmatch:
-      matching-strategy : ant_path_matcher
-
-  jpa:
-    show-sql : true
-    database-platform : org.hibernate.dialect.MySQL8Dialect
-    hibernate:
-      ddl-auto : update
-    properties:
-      hibernate:
-        format_sql : true
-        show_sql : true
-
-        default_batch_fetch_size: 500 #배치 사이즈 (Collection 조회 최적화)
-
-      open-in-view : false
-
-logging:
-  level:
-    org:
-
-      hiberante:
-        SQL: debug
-
-    com:
-      bcdeproject : info
-      amazonaws:
-        util:
-          EC2MetadataUtils: error
-
-image:
-  dir: D:\bcdeImg\
-
----
-### JWT
-jwt:
-  secret: 'Z87f78dygVAFGV87AY78YV87vuaaf12by98g4q93q0wva0djv05Y4Q98VRUVH38YcvhYF9843Y9hfojeovhq'
-
-  access:
-    expiration: 20000
-    header: Authorization
-
-  refresh:
-    expiration: 30000
-    header: Authorization-refresh
-
----
-# 공통
-spring:
-  config:
-    activate:
-      on-profile: "common"
-    servlet:
-      multipart:
-        max-request-size: 20MB  #업로드 파일 크기 총량 제한
-        max-file-size: 2MB     #업로드 파일 크기 제한
-
----
-# AWS S3에 필요한 정보
-cloud:
-  aws:
-    region:
-      static: ap-northeast-2
-    s3:
-      bucket: bcde-bucket
-    stack:
-      auto: false
-
-logging:
-  level:
-    com:
-      amazonaws:
-        util:
-          EC2MetadataUtils: error
 
 ---
 # 로컬 환경
@@ -101,6 +14,29 @@ spring:
       on-profile: "local"
   file-dir: /src/main/resources/static/files/
 
+  h2:
+    console:
+      enabled: true
+
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:tcp://localhost/~/test
+    username: sa
+    password:
+
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        default_batch_fetch_size: 100 #배치 사이즈 (Collection 조회 최적화)
+
+    hibernate:
+      ddl-auto: none
+
+
+
 ---
 # 배포 환경
 spring:
@@ -109,3 +45,4 @@ spring:
     activate:
       on-profile: "development"
   file-dir: /home/ec2-user/files/
+

@@ -1,0 +1,16 @@
+# AWS S3에 필요한 정보
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+    s3:
+      bucket: bcde-bucket
+    stack:
+      auto: false
+
+logging:
+  level:
+    com:
+      amazonaws:
+        util:
+          EC2MetadataUtils: error
