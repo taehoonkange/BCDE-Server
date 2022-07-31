@@ -38,7 +38,7 @@ public class MemberController {
     public String signUp(@Valid @RequestPart MemberSignUpDto memberSignUpDto,
                        @RequestPart (required = false) @ApiParam(value = "회원 프로필 사진") MultipartFile profileImg) throws Exception {
         memberService.signUp(memberSignUpDto, profileImg);
-        return "회원가입 완료";
+        return "회원가입 완료!!";
     }
 
     /**
