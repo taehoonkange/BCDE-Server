@@ -9,11 +9,6 @@ spring:
         max-file-size: 2MB     #업로드 파일 크기 제한
 
 
-#  data:
-#    web:
-#      pageable:
-#        default-page-size: 20  #페이징 할 때 기본값, 20개씩 조회
-
   mvc:
     pathmatch:
       matching-strategy : ant_path_matcher
