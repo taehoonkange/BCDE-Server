@@ -5,7 +5,7 @@ spring:
       "development": "development, common, jwt, cloud, dev-db"
       "development1": "common, jwt, cloud, dev-db"
       "development2": "common, jwt, cloud, dev-db"
-    active: development
+    active: development1
 
 ---
 # 로컬 환경
