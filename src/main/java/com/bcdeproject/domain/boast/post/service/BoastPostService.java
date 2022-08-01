@@ -1,10 +1,7 @@
 package com.bcdeproject.domain.boast.post.service;
 
+import com.bcdeproject.domain.boast.post.dto.*;
 import com.bcdeproject.global.condition.BoastPostSearchCondition;
-import com.bcdeproject.domain.boast.post.dto.BoastPostInfoDto;
-import com.bcdeproject.domain.boast.post.dto.BoastPostPagingDto;
-import com.bcdeproject.domain.boast.post.dto.BoastPostSaveDto;
-import com.bcdeproject.domain.boast.post.dto.BoastPostUpdateDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,6 +32,11 @@ public interface BoastPostService {
     /**
      * 검색 조건에 따른 게시글 리스트 조회 + 페이징
      */
-    BoastPostPagingDto searchPostList(Pageable pageable, BoastPostSearchCondition postSearchCondition);
+    BoastPostSearchPagingDto searchPostList(Pageable pageable, BoastPostSearchCondition postSearchCondition);
+
+    /**
+     * 최신 게시물 리스트 조회
+     */
+    BoastPostGetPagingDto getRecentPostList(Pageable pageable);
 }
 

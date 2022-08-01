@@ -1,15 +1,11 @@
 package com.bcdeproject.domain.boast.post.service;
 
 import com.bcdeproject.domain.boast.hashtag.BoastHashTag;
-import com.bcdeproject.domain.boast.hashtag.dto.BoastHashTagDto;
 import com.bcdeproject.domain.boast.imgurl.BoastImgUrl;
 import com.bcdeproject.domain.boast.imgurl.repository.BoastImgUrlRepository;
 import com.bcdeproject.domain.boast.post.BoastPost;
+import com.bcdeproject.domain.boast.post.dto.*;
 import com.bcdeproject.global.condition.BoastPostSearchCondition;
-import com.bcdeproject.domain.boast.post.dto.BoastPostInfoDto;
-import com.bcdeproject.domain.boast.post.dto.BoastPostPagingDto;
-import com.bcdeproject.domain.boast.post.dto.BoastPostSaveDto;
-import com.bcdeproject.domain.boast.post.dto.BoastPostUpdateDto;
 import com.bcdeproject.domain.boast.post.exception.BoastPostException;
 import com.bcdeproject.domain.boast.post.exception.BoastPostExceptionType;
 import com.bcdeproject.domain.boast.post.repository.BoastPostRepository;
@@ -18,7 +14,6 @@ import com.bcdeproject.domain.member.exception.MemberExceptionType;
 import com.bcdeproject.domain.member.repository.MemberRepository;
 import com.bcdeproject.global.s3.service.S3UploaderService;
 import com.bcdeproject.global.util.security.SecurityUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -215,9 +210,13 @@ public class BoastPostServiceImpl implements BoastPostService{
 
     // TODO: HashTag도 검색 조건에 추가
     @Override
-    public BoastPostPagingDto searchPostList(Pageable pageable, BoastPostSearchCondition postSearchCondition) {
-        return new BoastPostPagingDto(postRepository.search(postSearchCondition, pageable));
+    public BoastPostSearchPagingDto searchPostList(Pageable pageable, BoastPostSearchCondition postSearchCondition) {
+        return new BoastPostSearchPagingDto(postRepository.search(postSearchCondition, pageable));
     }
 
+    @Override
+    public BoastPostGetPagingDto getRecentPostList(Pageable pageable) {
+        return new BoastPostGetPagingDto(postRepository.findAll(pageable));
+    }
 
 }

@@ -1,15 +1,9 @@
 package com.bcdeproject.domain.boast.post.repository;
 
 import com.bcdeproject.domain.boast.hashtag.BoastHashTag;
-import com.bcdeproject.domain.boast.hashtag.QBoastHashTag;
 import com.bcdeproject.domain.boast.post.BoastPost;
-import com.bcdeproject.domain.boast.post.QBoastPost;
 import com.bcdeproject.global.condition.BoastPostSearchCondition;
-import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.ListPath;
-import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Page;
@@ -21,11 +15,9 @@ import org.springframework.util.StringUtils;
 import javax.persistence.EntityManager;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.bcdeproject.domain.boast.hashtag.QBoastHashTag.boastHashTag;
 import static com.bcdeproject.domain.boast.post.QBoastPost.boastPost;
-import static com.bcdeproject.domain.member.QMember.member;
 
 @Repository
 public class CustomBoastPostRepositoryImpl implements CustomBoastPostRepository{
@@ -35,6 +27,10 @@ public class CustomBoastPostRepositoryImpl implements CustomBoastPostRepository{
         query = new JPAQueryFactory(em);
     }
 
+    /**
+     * 해시태그 검색 로직
+     * 검색 해시태그를 포함하는 HashTag 게시물을 찾아서 Post와 fetchjoin후 최신 날짜부터 정렬해서 Paging
+     */
     @Override
     public Page<BoastHashTag> search(BoastPostSearchCondition postSearchCondition, Pageable pageable) {
 
@@ -49,9 +45,6 @@ public class CustomBoastPostRepositoryImpl implements CustomBoastPostRepository{
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch(); //Count 쿼리 발생 X
-
-
-
 
         JPAQuery<BoastHashTag> countQuery = query.selectFrom(boastHashTag)
                 .where(
@@ -71,6 +64,5 @@ public class CustomBoastPostRepositoryImpl implements CustomBoastPostRepository{
 
         return StringUtils.hasLength(hashTag) ? boastHashTag.name.contains(hashTag) : null;
     }
-
 
 }

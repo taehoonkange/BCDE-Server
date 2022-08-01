@@ -117,4 +117,17 @@ public class BoastPostController {
         return ResponseEntity.ok(boastPostService.searchPostList(pageable,boastPostSearchCondition));
     }
 
+    /**
+     * 메인 페이지 최신 게시글 불러오기
+     */
+    @Operation(summary = "최신 게시물 불러오기 API", description = "최신 게시물 불러오기 API Example")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "요청 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+            @ApiResponse(responseCode = "500", description = "서버 에러"),
+    })
+    @GetMapping("/recentPost")
+    public ResponseEntity getPost(Pageable pageable) {
+        return ResponseEntity.ok(boastPostService.getRecentPostList(pageable));
+    }
 }
