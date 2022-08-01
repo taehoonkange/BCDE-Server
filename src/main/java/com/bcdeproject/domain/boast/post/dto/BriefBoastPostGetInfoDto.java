@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
-public class BriefBoastPostSearchInfoDto {
+public class BriefBoastPostGetInfoDto {
 
     private Long postId;
 
@@ -23,9 +23,7 @@ public class BriefBoastPostSearchInfoDto {
     private List<BoastHashTagDto> hashTagList;
     private List<BoastImgUrlDto> imgUrlList;
 
-    public BriefBoastPostSearchInfoDto(BoastHashTag hashTag) {
-        BoastPost post = hashTag.getPost();
-
+    public BriefBoastPostGetInfoDto(BoastPost post) {
         this.postId = post.getId();
         this.title = post.getTitle();
         this.content = post.getContent();
