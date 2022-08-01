@@ -1,5 +1,6 @@
 package com.bcdeproject.domain.boast.post.dto;
 
+import com.bcdeproject.domain.boast.hashtag.BoastHashTag;
 import com.bcdeproject.domain.boast.post.BoastPost;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,7 +23,7 @@ public class BoastPostPagingDto {
     private List<BriefBoastPostInfoDto> simpleLectureDtoList = new ArrayList<>();
 
 
-    public BoastPostPagingDto(Page<BoastPost> searchResults) {
+    public BoastPostPagingDto(Page<BoastHashTag> searchResults) {
         this.totalPageCount = searchResults.getTotalPages();
         this.currentPageNum = searchResults.getNumber();
         this.totalElementCount = searchResults.getTotalElements();
