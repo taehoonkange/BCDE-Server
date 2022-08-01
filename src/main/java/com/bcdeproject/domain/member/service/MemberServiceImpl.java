@@ -1,5 +1,7 @@
 package com.bcdeproject.domain.member.service;
 
+import com.bcdeproject.domain.boast.post.dto.BoastPostGetPagingDto;
+import com.bcdeproject.domain.boast.post.repository.BoastPostRepository;
 import com.bcdeproject.domain.member.Member;
 import com.bcdeproject.domain.member.dto.MemberInfoDto;
 import com.bcdeproject.domain.member.dto.MemberSignUpDto;
@@ -11,6 +13,7 @@ import com.bcdeproject.global.s3.service.S3UploaderService;
 import com.bcdeproject.global.util.security.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +30,7 @@ public class MemberServiceImpl implements MemberService{
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final S3UploaderService s3UploaderService;
+    private final BoastPostRepository boastPostRepository;
 
     /**
      * 회원가입 로직
@@ -160,4 +164,15 @@ public class MemberServiceImpl implements MemberService{
         Member findMember = memberRepository.findByUsername(SecurityUtil.getLoginUsername()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         return new MemberInfoDto(findMember);
     }
+
+
+    /**
+     * 내 자랑 게시물 조회 로직
+     */
+    @Override
+    public BoastPostGetPagingDto getMytPostList(Pageable pageable) {
+        Member findMember = memberRepository.findByUsername(SecurityUtil.getLoginUsername()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        return new BoastPostGetPagingDto(boastPostRepository.getMyBoastPost(findMember, pageable));
+    }
+
 }

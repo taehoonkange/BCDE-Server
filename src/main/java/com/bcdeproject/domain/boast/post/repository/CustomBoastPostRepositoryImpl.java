@@ -2,6 +2,7 @@ package com.bcdeproject.domain.boast.post.repository;
 
 import com.bcdeproject.domain.boast.hashtag.BoastHashTag;
 import com.bcdeproject.domain.boast.post.BoastPost;
+import com.bcdeproject.domain.member.Member;
 import com.bcdeproject.global.condition.BoastPostSearchCondition;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -63,6 +64,26 @@ public class CustomBoastPostRepositoryImpl implements CustomBoastPostRepository{
     private BooleanExpression hashTagHasStr(String hashTag) {
 
         return StringUtils.hasLength(hashTag) ? boastHashTag.name.contains(hashTag) : null;
+    }
+
+    @Override
+    public Page<BoastPost> getMyBoastPost(Member member, Pageable pageable) {
+
+        List<BoastPost> post = query.selectFrom(boastPost)
+                .where(
+                        boastPost.writer.id.eq(member.getId())
+                )
+                .orderBy(boastPost.createdDate.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<BoastPost> countQuery = query.selectFrom(boastPost)
+                .where(
+                        boastPost.writer.id.eq(member.getId())
+                );
+
+        return PageableExecutionUtils.getPage(post, pageable, () -> countQuery.fetch().size());
     }
 
 }

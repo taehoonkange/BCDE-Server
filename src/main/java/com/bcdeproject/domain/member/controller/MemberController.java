@@ -1,5 +1,7 @@
 package com.bcdeproject.domain.member.controller;
 
+import com.bcdeproject.domain.boast.post.dto.BoastPostGetPagingDto;
+import com.bcdeproject.domain.boast.post.service.BoastPostService;
 import com.bcdeproject.domain.member.dto.*;
 import com.bcdeproject.domain.member.service.MemberService;
 import io.swagger.annotations.Api;
@@ -8,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +25,7 @@ import java.util.List;
 public class MemberController {
 
     private final MemberService memberService;
+    private final BoastPostService boastPostService;
 
     /**
      * 회원가입
@@ -131,6 +135,23 @@ public class MemberController {
 
         MemberInfoDto info = memberService.getMyInfo();
         return new ResponseEntity(info, HttpStatus.OK);
+    }
+
+    /**
+     * 내 자랑 게시물 조회
+     */
+    @Operation(summary = "내 자랑 게시물 조회 API", description = "내 자랑 게시물 조회 API Example")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "요청 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+            @ApiResponse(responseCode = "403", description = "인증되지 않은 회원입니다"),
+            @ApiResponse(responseCode = "404", description = "회원을 찾을 수 없습니다."),
+            @ApiResponse(responseCode = "500", description = "서버 에러"),
+    })
+    @GetMapping("/member/myBoastPost")
+    public ResponseEntity getMyBoastPostInfo(Pageable pageable) throws Exception {
+        BoastPostGetPagingDto mytPostList = memberService.getMytPostList(pageable);
+        return new ResponseEntity(mytPostList, HttpStatus.OK);
     }
 
 }

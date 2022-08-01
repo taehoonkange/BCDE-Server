@@ -1,8 +1,10 @@
 package com.bcdeproject.domain.member.service;
 
+import com.bcdeproject.domain.boast.post.dto.BoastPostGetPagingDto;
 import com.bcdeproject.domain.member.dto.MemberInfoDto;
 import com.bcdeproject.domain.member.dto.MemberSignUpDto;
 import com.bcdeproject.domain.member.dto.MemberUpdateDto;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
@@ -27,6 +29,8 @@ public interface MemberService {
     MemberInfoDto getInfo(Long memberId) throws Exception;
 
     MemberInfoDto getMyInfo() throws Exception;
+
+    BoastPostGetPagingDto getMytPostList(Pageable pageable);
 
 
 }
