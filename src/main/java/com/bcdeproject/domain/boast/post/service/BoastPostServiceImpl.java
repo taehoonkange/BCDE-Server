@@ -215,7 +215,9 @@ public class BoastPostServiceImpl implements BoastPostService{
 
     // TODO: HashTag도 검색 조건에 추가
     @Override
-    public BoastPostPagingDto getPostList(Pageable pageable, BoastPostSearchCondition postSearchCondition) {
+    public BoastPostPagingDto searchPostList(Pageable pageable, BoastPostSearchCondition postSearchCondition) {
         return new BoastPostPagingDto(postRepository.search(postSearchCondition, pageable));
     }
+
+
 }

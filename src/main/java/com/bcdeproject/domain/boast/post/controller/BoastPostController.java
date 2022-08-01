@@ -114,6 +114,7 @@ public class BoastPostController {
     public ResponseEntity search(Pageable pageable,
                                  @ModelAttribute BoastPostSearchCondition boastPostSearchCondition){
 
-        return ResponseEntity.ok(boastPostService.getPostList(pageable,boastPostSearchCondition));
+        return ResponseEntity.ok(boastPostService.searchPostList(pageable,boastPostSearchCondition));
     }
+
 }
