@@ -149,7 +149,7 @@ public class MemberController {
             @ApiResponse(responseCode = "500", description = "서버 에러"),
     })
     @GetMapping("/member/myBoastPost")
-    public ResponseEntity getMyBoastPostInfo(Pageable pageable) throws Exception {
+    public ResponseEntity getMyBoastPostInfo() throws Exception {
         BoastPostGetPagingDto mytPostList = memberService.getMytPostList();
         return new ResponseEntity(mytPostList, HttpStatus.OK);
     }

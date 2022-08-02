@@ -177,7 +177,7 @@ public class MemberServiceImpl implements MemberService{
         Member loginMember = memberRepository.findByUsername(SecurityUtil.getLoginUsername())
                 .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
-        List<BriefBoastPostGetInfoDto> briefBoastPostGetInfoDtoList = boastPostRepository.getRecentBoastPost(loginMember).stream()
+        List<BriefBoastPostGetInfoDto> briefBoastPostGetInfoDtoList = boastPostRepository.getMyBoastPost(loginMember).stream()
                 .map(boastPost -> {
                     int boastPostLikeCount = boastPostRepository.getBoastPostLikeCount(boastPost);
                     boolean isLike = boastPostRepository.isLikedMember(boastPost, loginMember);
