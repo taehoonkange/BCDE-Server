@@ -262,7 +262,7 @@ public class BoastPostServiceImpl implements BoastPostService{
      * 좋아요 삭제 로직 : 좋아요 눌린 상태로 요청 시
      */
     @Override
-    public void deleteLike(Long boastPostId, Long boastLikeId) {
+    public void deleteLike(Long boastPostId) {
         Member loginMember = memberRepository.findByUsername(SecurityUtil.getLoginUsername())
                 .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
@@ -274,7 +274,7 @@ public class BoastPostServiceImpl implements BoastPostService{
                 () -> new BoastLikeException(BoastLikeExceptionType.NOT_FOUND_LIKE));
 
         // 좋아요 삭제(좋아요 테이블에 해당 유저, 포스트 삭제)
-        boastLikeRepository.deleteById(boastLikeId);
+        boastLikeRepository.deleteByPost_IdAndMember_Id(boastPostId, loginMember.getId());
     }
 
 }

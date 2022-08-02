@@ -48,6 +48,6 @@ public interface BoastPostService {
     /**
      * 좋아요 삭제
      */
-    void deleteLike(Long boastPostId, Long boastLikeId);
+    void deleteLike(Long boastPostId);
 }
 

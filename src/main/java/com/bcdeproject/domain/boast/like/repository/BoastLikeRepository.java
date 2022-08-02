@@ -12,4 +12,6 @@ public interface BoastLikeRepository extends JpaRepository<BoastLike, Long> {
 
     Optional<BoastLike> findByMemberAndPost(Member member, BoastPost boastPost);
     int countByPost(BoastPost boastPost);
+
+    void deleteByPost_IdAndMember_Id(Long postId, Long memberId);
 }
