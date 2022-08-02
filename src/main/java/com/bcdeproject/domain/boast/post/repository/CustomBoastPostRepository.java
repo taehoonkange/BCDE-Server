@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface CustomBoastPostRepository {
 
-    Page<BoastHashTag> search(BoastPostSearchCondition postSearchCondition, Pageable pageable);
+    List<BoastHashTag> searchByHashTag(BoastPostSearchCondition postSearchCondition);
 
     List<BoastPost> getMyBoastPost(Member member);
 

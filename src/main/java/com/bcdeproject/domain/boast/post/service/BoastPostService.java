@@ -33,7 +33,7 @@ public interface BoastPostService {
     /**
      * 검색 조건에 따른 게시글 리스트 조회 + 페이징
      */
-    BoastPostSearchPagingDto searchPostList(Pageable pageable, BoastPostSearchCondition postSearchCondition);
+    BoastPostSearchPagingDto searchPostList(BoastPostSearchCondition postSearchCondition);
 
     /**
      * 최신 게시물 리스트 조회

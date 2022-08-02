@@ -37,9 +37,9 @@ public class CustomBoastPostRepositoryImpl implements CustomBoastPostRepository{
      * 검색 해시태그를 포함하는 HashTag 게시물을 찾아서 Post와 fetchjoin후 최신 날짜부터 정렬해서 Paging
      */
     @Override
-    public Page<BoastHashTag> search(BoastPostSearchCondition postSearchCondition, Pageable pageable) {
+    public List<BoastHashTag> searchByHashTag(BoastPostSearchCondition postSearchCondition) {
 
-        List<BoastHashTag> hashTag = query.selectFrom(boastHashTag)
+        List<BoastHashTag> hashTagList = query.selectFrom(boastHashTag)
                 .where(
                         // null 이면 조건 무시
                         hashTagHasStr(postSearchCondition.getHashTag()) // boastHashTag.name.contains(hashTag)
@@ -47,17 +47,10 @@ public class CustomBoastPostRepositoryImpl implements CustomBoastPostRepository{
                 .leftJoin(boastHashTag.post, boastPost)
                 .fetchJoin()
                 .orderBy(boastPost.createdDate.desc())//최신 날짜부터
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
                 .fetch(); //Count 쿼리 발생 X
 
-        JPAQuery<BoastHashTag> countQuery = query.selectFrom(boastHashTag)
-                .where(
-                        hashTagHasStr(postSearchCondition.getHashTag())
-                );
 
-
-        return PageableExecutionUtils.getPage(hashTag, pageable, () -> countQuery.fetch().size());
+        return hashTagList;
     }
 
     /**

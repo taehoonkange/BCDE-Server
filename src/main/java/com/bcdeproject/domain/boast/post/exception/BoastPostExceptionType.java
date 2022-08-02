@@ -10,7 +10,8 @@ public enum BoastPostExceptionType implements BaseExceptionType {
     NOT_AUTHORITY_DELETE_POST(702, HttpStatus.FORBIDDEN, "게시물을 삭제할 권한이 없습니다."),
     UPDATE_POST_TITLE_NOT_FOUND(703, HttpStatus.BAD_REQUEST, "게시물 업데이트 제목을 입력해주세요."),
     UPDATE_POST_CONTENT_NOT_FOUND(704, HttpStatus.BAD_REQUEST, "게시물 업데이트 내용을 입력해주세요."),
-    UPDATE_POST_HASHTAG_NOT_FOUND(705, HttpStatus.BAD_REQUEST, "게시물 업데이트 해시태그를 입력해주세요.");
+    UPDATE_POST_HASHTAG_NOT_FOUND(705, HttpStatus.BAD_REQUEST, "게시물 업데이트 해시태그를 입력해주세요."),
+    SEARCH_HASHTAG_NOT_FOUND(706, HttpStatus.NOT_FOUND, "검색한 해시태그가 포함된 게시물이 없습니다.");
 
 
     private int errorCode;
