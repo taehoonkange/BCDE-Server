@@ -21,7 +21,9 @@ public class BriefBoastPostGetInfoDto {
 
     public BriefBoastPostGetInfoDto(BoastPost post, int likeCount, boolean isLike) {
         this.postId = post.getId();
-        this.thumbnailImg = post.getBoastImgUrlList().get(0).getImgUrl();
+        // TODO : 프로필 사진 null 안 되게 바꿨을 때 수정하기
+        if(post.getBoastImgUrlList().get(0).getImgUrl() == null) this.thumbnailImg = null;
+        else this.thumbnailImg = post.getBoastImgUrlList().get(0).getImgUrl();
         this.likeCount = likeCount;
         this.isLike = isLike;
     }
