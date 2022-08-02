@@ -30,7 +30,7 @@ public interface MemberService {
 
     MemberInfoDto getMyInfo() throws Exception;
 
-    BoastPostGetPagingDto getMytPostList(Pageable pageable);
+    BoastPostGetPagingDto getMytPostList();
 
 
 }

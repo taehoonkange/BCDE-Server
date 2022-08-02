@@ -15,25 +15,14 @@ import java.util.stream.Collectors;
 public class BriefBoastPostGetInfoDto {
 
     private Long postId;
+    private String thumbnailImg;
+    private int likeCount;
+    private boolean isLike;
 
-    private String title;//제목
-    private String content;//내용
-    private String writerName;//작성자의 닉네임
-    private String createdDate; //작성일
-    private List<BoastHashTagDto> hashTagList;
-    private List<BoastImgUrlDto> imgUrlList;
-
-    public BriefBoastPostGetInfoDto(BoastPost post) {
+    public BriefBoastPostGetInfoDto(BoastPost post, int likeCount, boolean isLike) {
         this.postId = post.getId();
-        this.title = post.getTitle();
-        this.content = post.getContent();
-        this.writerName = post.getWriter().getNickName();
-        this.createdDate = post.getCreatedDate().toString();
-        this.hashTagList = post.getBoastHashTagList().stream()
-                .map(boastHashTag -> new BoastHashTagDto(boastHashTag))
-                .collect(Collectors.toList());
-        this.imgUrlList = post.getBoastImgUrlList().stream()
-                .map(boastImgUrl -> new BoastImgUrlDto(boastImgUrl))
-                .collect(Collectors.toList());
+        this.thumbnailImg = post.getBoastImgUrlList().get(0).getImgUrl();
+        this.likeCount = likeCount;
+        this.isLike = isLike;
     }
 }
