@@ -2,10 +2,9 @@ package com.bcdeproject.domain.member;
 
 import com.bcdeproject.domain.BaseTimeEntity;
 import com.bcdeproject.domain.boast.comment.BoastComment;
-import com.bcdeproject.domain.boast.heart.BoastHeart;
+import com.bcdeproject.domain.boast.like.BoastLike;
 import com.bcdeproject.domain.boast.imgurl.BoastImgUrl;
 import com.bcdeproject.domain.boast.post.BoastPost;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -56,7 +55,7 @@ public class Member extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
     @Builder.Default
-    private List<BoastHeart> boastHeartList = new ArrayList<>();
+    private List<BoastLike> boastLikeList = new ArrayList<>();
 
     @OneToMany(mappedBy = "writer", cascade = ALL, orphanRemoval = true)
     @Builder.Default
@@ -79,9 +78,9 @@ public class Member extends BaseTimeEntity {
         boastCommentList.add(boastComment);
     }
 
-    public void addBoastHeart(BoastHeart boastHeart) {
+    public void addBoastHeart(BoastLike boastLike) {
         //heart의 member 설정은 heart에서 함
-        boastHeartList.add(boastHeart);
+        boastLikeList.add(boastLike);
     }
 
     public void addBoastImgUrl(BoastImgUrl boastImgUrl) {
