@@ -216,8 +216,27 @@ public class BoastPostServiceImpl implements BoastPostService{
 
     // TODO: HashTag도 검색 조건에 추가
     @Override
-    public BoastPostSearchPagingDto searchPostList(Pageable pageable, BoastPostSearchCondition postSearchCondition) {
-        return new BoastPostSearchPagingDto(boastPostRepository.search(postSearchCondition, pageable));
+    public BoastPostSearchPagingDto searchPostList(BoastPostSearchCondition postSearchCondition) {
+        Member loginMember = memberRepository.findByUsername(SecurityUtil.getLoginUsername())
+                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+
+        List<BoastHashTag> boastHashTagList = boastPostRepository.searchByHashTag(postSearchCondition);
+        if(boastHashTagList.isEmpty()) {
+            throw new BoastPostException(BoastPostExceptionType.SEARCH_HASHTAG_NOT_FOUND);
+        } else {
+            List<BriefBoastPostSearchInfoDto> briefBoastPostGetInfoDtoList = boastHashTagList.stream()
+                    .map(boastHashTag -> {
+                        Long findPostId = boastHashTag.getPost().getId();
+                        BoastPost findBoastPost = boastPostRepository.findById(findPostId).orElseThrow(
+                                () -> new BoastPostException(BoastPostExceptionType.POST_NOT_FOUND));
+
+                        int boastPostLikeCount = boastPostRepository.getBoastPostLikeCount(findBoastPost);
+                        boolean isLike = boastPostRepository.isLikedMember(findBoastPost, loginMember);
+                        return new BriefBoastPostSearchInfoDto(findBoastPost, boastPostLikeCount, isLike);
+                    }).collect(Collectors.toList());
+
+            return new BoastPostSearchPagingDto(briefBoastPostGetInfoDtoList);
+        }
     }
 
     @Override

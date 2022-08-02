@@ -111,10 +111,9 @@ public class BoastPostController {
             @ApiResponse(responseCode = "500", description = "서버 에러"),
     })
     @GetMapping("/search")
-    public ResponseEntity search(Pageable pageable,
-                                 @ModelAttribute BoastPostSearchCondition boastPostSearchCondition){
+    public ResponseEntity search(@ModelAttribute BoastPostSearchCondition boastPostSearchCondition){
 
-        return ResponseEntity.ok(boastPostService.searchPostList(pageable,boastPostSearchCondition));
+        return ResponseEntity.ok(boastPostService.searchPostList(boastPostSearchCondition));
     }
 
     /**
