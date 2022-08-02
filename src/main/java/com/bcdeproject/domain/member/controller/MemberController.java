@@ -150,7 +150,7 @@ public class MemberController {
     })
     @GetMapping("/member/myBoastPost")
     public ResponseEntity getMyBoastPostInfo(Pageable pageable) throws Exception {
-        BoastPostGetPagingDto mytPostList = memberService.getMytPostList(pageable);
+        BoastPostGetPagingDto mytPostList = memberService.getMytPostList();
         return new ResponseEntity(mytPostList, HttpStatus.OK);
     }
 

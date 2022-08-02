@@ -1,8 +1,10 @@
 package com.bcdeproject.domain.boast.post.repository;
 
 import com.bcdeproject.domain.boast.hashtag.BoastHashTag;
+import com.bcdeproject.domain.boast.like.QBoastLike;
 import com.bcdeproject.domain.boast.post.BoastPost;
 import com.bcdeproject.domain.member.Member;
+import com.bcdeproject.domain.member.QMember;
 import com.bcdeproject.global.condition.BoastPostSearchCondition;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -18,7 +20,9 @@ import javax.persistence.EntityManager;
 import java.util.List;
 
 import static com.bcdeproject.domain.boast.hashtag.QBoastHashTag.boastHashTag;
+import static com.bcdeproject.domain.boast.like.QBoastLike.boastLike;
 import static com.bcdeproject.domain.boast.post.QBoastPost.boastPost;
+import static com.bcdeproject.domain.member.QMember.member;
 
 @Repository
 public class CustomBoastPostRepositoryImpl implements CustomBoastPostRepository{
@@ -67,23 +71,55 @@ public class CustomBoastPostRepositoryImpl implements CustomBoastPostRepository{
     }
 
     @Override
-    public Page<BoastPost> getMyBoastPost(Member member, Pageable pageable) {
+    public List<BoastPost> getMyBoastPost(Member member) {
 
-        List<BoastPost> post = query.selectFrom(boastPost)
+        List<BoastPost> myBoastPostList = query.selectFrom(boastPost)
                 .where(
                         boastPost.writer.id.eq(member.getId())
                 )
                 .orderBy(boastPost.createdDate.desc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
                 .fetch();
-
-        JPAQuery<BoastPost> countQuery = query.selectFrom(boastPost)
-                .where(
-                        boastPost.writer.id.eq(member.getId())
-                );
-
-        return PageableExecutionUtils.getPage(post, pageable, () -> countQuery.fetch().size());
+        return myBoastPostList;
     }
 
+    @Override
+    public List<BoastPost> getRecentBoastPost(Member member) {
+
+        List<BoastPost> recentBoastPostList = query.selectFrom(boastPost)
+                .orderBy(boastPost.createdDate.desc())
+                .fetch();
+
+        return recentBoastPostList;
+    }
+
+
+    @Override
+    public int getBoastPostLikeCount(BoastPost boastPost) {
+        List<Long> postLikeCount = query.select(boastLike.count())
+                .from(boastLike)
+                .where(
+                        boastLike.post.id.eq(boastPost.getId())
+                )
+                .groupBy(boastLike.post.id)
+                .fetch();
+        int likeCount = postLikeCount.size();
+
+        return likeCount;
+    }
+
+    @Override
+    public boolean isLikedMember(BoastPost boastPost, Member findMember) {
+
+        List<Long> memberLikeList = query.select(boastLike.count())
+                .from(boastLike)
+                .where(
+                        boastLike.post.id.eq(boastPost.getId()),
+                        boastLike.member.id.eq(findMember.getId())
+                )
+                .groupBy(boastLike.member.id)
+                .fetch();
+
+        if(memberLikeList.isEmpty()) return false;
+        else return true;
+    }
 }

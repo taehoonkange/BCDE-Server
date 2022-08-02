@@ -3,11 +3,9 @@ package com.bcdeproject.domain.boast.post;
 import com.bcdeproject.domain.BaseTimeEntity;
 import com.bcdeproject.domain.boast.comment.BoastComment;
 import com.bcdeproject.domain.boast.hashtag.BoastHashTag;
-import com.bcdeproject.domain.boast.heart.BoastHeart;
+import com.bcdeproject.domain.boast.like.BoastLike;
 import com.bcdeproject.domain.boast.imgurl.BoastImgUrl;
 import com.bcdeproject.domain.member.Member;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -53,7 +51,7 @@ public class BoastPost extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "post", cascade = ALL, orphanRemoval = true)
     @Builder.Default
-    private List<BoastHeart> boastHeartList = new ArrayList<>();
+    private List<BoastLike> boastLikeList = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = ALL, orphanRemoval = true)
     @Builder.Default
@@ -74,8 +72,8 @@ public class BoastPost extends BaseTimeEntity {
         boastHashTagList.add(boastHashTag);
     }
 
-    public void addBoastHeart(BoastHeart boastHeart) {
-        boastHeartList.add(boastHeart);
+    public void addBoastHeart(BoastLike boastLike) {
+        boastLikeList.add(boastLike);
     }
 
     public void addBoastImgUrl(BoastImgUrl boastImgUrl) {
@@ -84,6 +82,11 @@ public class BoastPost extends BaseTimeEntity {
 
     public void removeBoastImgUrl(BoastImgUrl boastImgUrl) {
         boastImgUrlList.remove(boastImgUrl);
+    }
+
+    // 좋아요 개수 반환 메소드
+    public int likeCount() {
+        return boastLikeList.size();
     }
 
     // 내용 수정

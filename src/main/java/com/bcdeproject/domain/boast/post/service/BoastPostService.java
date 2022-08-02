@@ -1,5 +1,6 @@
 package com.bcdeproject.domain.boast.post.service;
 
+import com.bcdeproject.domain.boast.post.BoastPost;
 import com.bcdeproject.domain.boast.post.dto.*;
 import com.bcdeproject.global.condition.BoastPostSearchCondition;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +38,16 @@ public interface BoastPostService {
     /**
      * 최신 게시물 리스트 조회
      */
-    BoastPostGetPagingDto getRecentPostList(Pageable pageable);
+    BoastPostGetPagingDto getRecentPostList();
+
+    /**
+     * 좋아요 추가
+     */
+    void addLike(Long boastPostId);
+
+    /**
+     * 좋아요 삭제
+     */
+    void deleteLike(Long boastPostId, Long boastLikeId);
 }
 

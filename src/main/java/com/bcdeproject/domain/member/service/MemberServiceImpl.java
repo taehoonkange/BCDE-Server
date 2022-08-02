@@ -1,6 +1,7 @@
 package com.bcdeproject.domain.member.service;
 
 import com.bcdeproject.domain.boast.post.dto.BoastPostGetPagingDto;
+import com.bcdeproject.domain.boast.post.dto.BriefBoastPostGetInfoDto;
 import com.bcdeproject.domain.boast.post.repository.BoastPostRepository;
 import com.bcdeproject.domain.member.Member;
 import com.bcdeproject.domain.member.dto.MemberInfoDto;
@@ -19,7 +20,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -170,9 +173,18 @@ public class MemberServiceImpl implements MemberService{
      * 내 자랑 게시물 조회 로직
      */
     @Override
-    public BoastPostGetPagingDto getMytPostList(Pageable pageable) {
-        Member findMember = memberRepository.findByUsername(SecurityUtil.getLoginUsername()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
-        return new BoastPostGetPagingDto(boastPostRepository.getMyBoastPost(findMember, pageable));
+    public BoastPostGetPagingDto getMytPostList() {
+        Member loginMember = memberRepository.findByUsername(SecurityUtil.getLoginUsername())
+                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+
+        List<BriefBoastPostGetInfoDto> briefBoastPostGetInfoDtoList = boastPostRepository.getRecentBoastPost(loginMember).stream()
+                .map(boastPost -> {
+                    int boastPostLikeCount = boastPostRepository.getBoastPostLikeCount(boastPost);
+                    boolean isLike = boastPostRepository.isLikedMember(boastPost, loginMember);
+                    return new BriefBoastPostGetInfoDto(boastPost, boastPostLikeCount, isLike);
+                }).collect(Collectors.toList());
+
+        return new BoastPostGetPagingDto(briefBoastPostGetInfoDtoList);
     }
 
 }
