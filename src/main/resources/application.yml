@@ -28,6 +28,7 @@ spring:
 
   jpa:
     show-sql: true
+    database-platform: org.hibernate.dialect.H2Dialect
     properties:
       hibernate:
         format_sql: true
@@ -35,7 +36,7 @@ spring:
         default_batch_fetch_size: 100 #배치 사이즈 (Collection 조회 최적화)
 
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
 
 
 
@@ -47,4 +48,5 @@ spring:
     activate:
       on-profile: "development"
   file-dir: /home/ec2-user/files/
+
 
