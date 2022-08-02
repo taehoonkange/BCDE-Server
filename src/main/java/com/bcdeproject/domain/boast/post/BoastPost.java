@@ -72,7 +72,7 @@ public class BoastPost extends BaseTimeEntity {
         boastHashTagList.add(boastHashTag);
     }
 
-    public void addBoastHeart(BoastLike boastLike) {
+    public void addBoastLike(BoastLike boastLike) {
         boastLikeList.add(boastLike);
     }
 

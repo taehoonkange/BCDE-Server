@@ -78,8 +78,8 @@ public class Member extends BaseTimeEntity {
         boastCommentList.add(boastComment);
     }
 
-    public void addBoastHeart(BoastLike boastLike) {
-        //heart의 member 설정은 heart에서 함
+    public void addBoastLike(BoastLike boastLike) {
+        //like의 member 설정은 like에서 함
         boastLikeList.add(boastLike);
     }
 
