@@ -30,6 +30,8 @@ public class BoastHeart extends BaseTimeEntity {
     @JoinColumn(name = "post_id")
     private BoastPost post;
 
+    @Column(name)
+
     // 연관 관계 편의 메소드
     public void confirmMember(Member member) {
         this.member = member;

@@ -1,6 +1,8 @@
 package com.bcdeproject.domain.boast.post.repository;
 
+import com.bcdeproject.domain.boast.hashtag.BoastHashTag;
 import com.bcdeproject.domain.boast.post.BoastPost;
+import com.bcdeproject.domain.member.Member;
 import com.bcdeproject.global.condition.BoastPostSearchCondition;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -8,15 +10,17 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
 
 import java.util.List;
 
+import static com.bcdeproject.domain.boast.hashtag.QBoastHashTag.boastHashTag;
 import static com.bcdeproject.domain.boast.post.QBoastPost.boastPost;
-import static com.bcdeproject.domain.member.QMember.member;
 
+@Repository
 public class CustomBoastPostRepositoryImpl implements CustomBoastPostRepository{
 
     private final JPAQueryFactory query;
@@ -24,57 +28,62 @@ public class CustomBoastPostRepositoryImpl implements CustomBoastPostRepository{
         query = new JPAQueryFactory(em);
     }
 
-
+    /**
+     * 해시태그 검색 로직
+     * 검색 해시태그를 포함하는 HashTag 게시물을 찾아서 Post와 fetchjoin후 최신 날짜부터 정렬해서 Paging
+     */
     @Override
-    public Page<BoastPost> search(BoastPostSearchCondition postSearchCondition, Pageable pageable) {
+    public Page<BoastHashTag> search(BoastPostSearchCondition postSearchCondition, Pageable pageable) {
 
-
-
-        List<BoastPost> content = query.selectFrom(boastPost)
-
+        List<BoastHashTag> hashTag = query.selectFrom(boastHashTag)
                 .where(
                         // null 이면 조건 무시
-                        contentHasStr(postSearchCondition.getContent()), // boastPost.content.contains(content)
-                        titleHasStr(postSearchCondition.getTitle()) // boastPost.title.contains(title)
-//                        hashTagHasStr(postSearchCondition.getHashTag()) // boastPost.content.contains(hashTag)
+                        hashTagHasStr(postSearchCondition.getHashTag()) // boastHashTag.name.contains(hashTag)
                 )
-                .leftJoin(boastPost.writer, member)
-
+                .leftJoin(boastHashTag.post, boastPost)
                 .fetchJoin()
                 .orderBy(boastPost.createdDate.desc())//최신 날짜부터
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch(); //Count 쿼리 발생 X
 
-
-
-
-        JPAQuery<BoastPost> countQuery = query.selectFrom(boastPost)
+        JPAQuery<BoastHashTag> countQuery = query.selectFrom(boastHashTag)
                 .where(
-                        contentHasStr(postSearchCondition.getContent()),
-                        titleHasStr(postSearchCondition.getTitle())
+                        hashTagHasStr(postSearchCondition.getHashTag())
                 );
 
 
-        return PageableExecutionUtils.getPage(content, pageable, () -> countQuery.fetch().size());
+        return PageableExecutionUtils.getPage(hashTag, pageable, () -> countQuery.fetch().size());
     }
 
     /**
-     * content, title, hashTag가 문자인지 검증
+     * hashTag가 문자인지 검증
      * 문자라면, boastPost.content.contains(content) QueryDSL문 리턴
      * 문자가 아니라면, null 리턴
      */
-    private BooleanExpression contentHasStr(String content) {
-        return StringUtils.hasLength(content) ? boastPost.content.contains(content) : null;
+    private BooleanExpression hashTagHasStr(String hashTag) {
+
+        return StringUtils.hasLength(hashTag) ? boastHashTag.name.contains(hashTag) : null;
     }
 
+    @Override
+    public Page<BoastPost> getMyBoastPost(Member member, Pageable pageable) {
 
-    private BooleanExpression titleHasStr(String title) {
-        return StringUtils.hasLength(title) ? boastPost.title.contains(title) : null;
+        List<BoastPost> post = query.selectFrom(boastPost)
+                .where(
+                        boastPost.writer.id.eq(member.getId())
+                )
+                .orderBy(boastPost.createdDate.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<BoastPost> countQuery = query.selectFrom(boastPost)
+                .where(
+                        boastPost.writer.id.eq(member.getId())
+                );
+
+        return PageableExecutionUtils.getPage(post, pageable, () -> countQuery.fetch().size());
     }
-//
-//    private BooleanExpression hashTagHasStr(String hashTag) {
-//        return StringUtils.hasLength(hashTag) ? boastPost.boastHashTagList : null;
-//    }
 
 }
