@@ -35,12 +35,12 @@ public class BoastLike extends BaseTimeEntity {
     // 연관 관계 편의 메소드
     public void confirmMember(Member member) {
         this.member = member;
-        member.addBoastHeart(this);
+        member.addBoastLike(this);
     }
 
     public void confirmPost(BoastPost post) {
         this.post = post;
-        post.addBoastHeart(this);
+        post.addBoastLike(this);
     }
 
     @Builder
