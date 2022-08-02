@@ -143,9 +143,8 @@ public class BoastPostController {
     /**
      * 좋아요 삭제
      */
-    @PostMapping("/deleteLike/{boastPostId}/{boastLikeId}")
-    public void deleteLike(@PathVariable Long boastPostId,
-                           @PathVariable Long boastLikeId) {
-        boastPostService.deleteLike(boastPostId, boastLikeId);
+    @PostMapping("/deleteLike/{boastPostId}")
+    public void deleteLike(@PathVariable Long boastPostId) {
+        boastPostService.deleteLike(boastPostId);
     }
 }
