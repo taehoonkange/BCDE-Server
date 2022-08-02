@@ -4,6 +4,7 @@ import com.bcdeproject.domain.member.repository.MemberRepository;
 import com.bcdeproject.global.jwt.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -25,6 +26,8 @@ public class LoginSuccessJWTProvideHandler extends SimpleUrlAuthenticationSucces
     private final JwtService jwtService;
     private final MemberRepository memberRepository;
 
+    @Value("${jwt.access.expiration}")
+    private String expiration;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -47,6 +50,7 @@ public class LoginSuccessJWTProvideHandler extends SimpleUrlAuthenticationSucces
         log.info( "로그인에 성공합니다. username: {}" ,username);
         log.info( "AccessToken 을 발급합니다. AccessToken: {}" ,accessToken);
         log.info( "RefreshToken 을 발급합니다. RefreshToken: {}" ,refreshToken);
+        log.info("Access Token 만료 기간 : {}", expiration);
     }
 
 
