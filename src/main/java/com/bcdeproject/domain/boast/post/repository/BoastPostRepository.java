@@ -8,6 +8,8 @@ import java.util.Optional;
 
 public interface BoastPostRepository extends JpaRepository<BoastPost, Long>, CustomBoastPostRepository {
 
+    Optional<BoastPost> findById(Long id);
+
     @EntityGraph(attributePaths = {"writer"})
     Optional<BoastPost> findWithWriterById(Long id);
 }

@@ -127,7 +127,25 @@ public class BoastPostController {
             @ApiResponse(responseCode = "500", description = "서버 에러"),
     })
     @GetMapping("/recentPost")
-    public ResponseEntity getPost(Pageable pageable) {
-        return ResponseEntity.ok(boastPostService.getRecentPostList(pageable));
+    public ResponseEntity getRecentPost() {
+
+        return ResponseEntity.ok(boastPostService.getRecentPostList());
+    }
+
+    /**
+     * 좋아요 추가
+     */
+    @PostMapping("/addLike/{boastPostId}")
+    public void addLike(@PathVariable Long boastPostId) {
+        boastPostService.addLike(boastPostId);
+    }
+
+    /**
+     * 좋아요 삭제
+     */
+    @PostMapping("/deleteLike/{boastPostId}/{boastLikeId}")
+    public void deleteLike(@PathVariable Long boastPostId,
+                           @PathVariable Long boastLikeId) {
+        boastPostService.deleteLike(boastPostId, boastLikeId);
     }
 }

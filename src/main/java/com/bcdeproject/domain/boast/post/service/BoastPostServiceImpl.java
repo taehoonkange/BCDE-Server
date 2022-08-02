@@ -3,8 +3,13 @@ package com.bcdeproject.domain.boast.post.service;
 import com.bcdeproject.domain.boast.hashtag.BoastHashTag;
 import com.bcdeproject.domain.boast.imgurl.BoastImgUrl;
 import com.bcdeproject.domain.boast.imgurl.repository.BoastImgUrlRepository;
+import com.bcdeproject.domain.boast.like.BoastLike;
+import com.bcdeproject.domain.boast.like.exception.BoastLikeException;
+import com.bcdeproject.domain.boast.like.exception.BoastLikeExceptionType;
+import com.bcdeproject.domain.boast.like.repository.BoastLikeRepository;
 import com.bcdeproject.domain.boast.post.BoastPost;
 import com.bcdeproject.domain.boast.post.dto.*;
+import com.bcdeproject.domain.member.Member;
 import com.bcdeproject.global.condition.BoastPostSearchCondition;
 import com.bcdeproject.domain.boast.post.exception.BoastPostException;
 import com.bcdeproject.domain.boast.post.exception.BoastPostExceptionType;
@@ -30,10 +35,11 @@ import java.util.stream.Collectors;
 @Slf4j
 public class BoastPostServiceImpl implements BoastPostService{
 
-    private final BoastPostRepository postRepository;
+    private final BoastPostRepository boastPostRepository;
     private final MemberRepository memberRepository;
     private final BoastImgUrlRepository boastImgUrlRepository;
     private final S3UploaderService s3UploaderService;
+    private final BoastLikeRepository boastLikeRepository;
 
 
     @Override
@@ -63,7 +69,7 @@ public class BoastPostServiceImpl implements BoastPostService{
         }
 
         // 이미지와 해시태그 리스트가 추가된 post DB에 저장
-        postRepository.save(post);
+        boastPostRepository.save(post);
     }
 
 
@@ -73,7 +79,7 @@ public class BoastPostServiceImpl implements BoastPostService{
     @Override
     public void update(Long id, BoastPostUpdateDto postUpdateDto, List<MultipartFile> updateImg) throws Exception{
 
-        BoastPost post = postRepository.findById(id).orElseThrow(() ->
+        BoastPost post = boastPostRepository.findById(id).orElseThrow(() ->
                 new BoastPostException(BoastPostExceptionType.POST_NOT_FOUND));
 
         checkAuthority(post, BoastPostExceptionType.NOT_AUTHORITY_UPDATE_POST);
@@ -103,7 +109,7 @@ public class BoastPostServiceImpl implements BoastPostService{
                 // post(게시글) 해시태그 이미지 리스트 업데이트(저장)
                 hashTagListSave(post, hashTags);
 
-                postRepository.save(post);
+                boastPostRepository.save(post);
             }
         } else {
             throw new BoastPostException(BoastPostExceptionType.UPDATE_POST_HASHTAG_NOT_FOUND);
@@ -167,7 +173,7 @@ public class BoastPostServiceImpl implements BoastPostService{
     @Override
     public void delete(Long id) {
 
-        BoastPost post = postRepository.findById(id).orElseThrow(() ->
+        BoastPost post = boastPostRepository.findById(id).orElseThrow(() ->
                 new BoastPostException(BoastPostExceptionType.POST_NOT_FOUND));
 
         checkAuthority(post, BoastPostExceptionType.NOT_AUTHORITY_DELETE_POST);
@@ -179,7 +185,7 @@ public class BoastPostServiceImpl implements BoastPostService{
             s3UploaderService.deleteOriginalFileList(imgUrls);
         }
         // 경로 삭제
-        postRepository.delete(post);
+        boastPostRepository.delete(post);
     }
 
 
@@ -204,19 +210,71 @@ public class BoastPostServiceImpl implements BoastPostService{
          *
          *
          */
-        return new BoastPostInfoDto(postRepository.findWithWriterById(id)
+        return new BoastPostInfoDto(boastPostRepository.findWithWriterById(id)
                 .orElseThrow(() -> new BoastPostException(BoastPostExceptionType.POST_NOT_FOUND)));
     }
 
     // TODO: HashTag도 검색 조건에 추가
     @Override
     public BoastPostSearchPagingDto searchPostList(Pageable pageable, BoastPostSearchCondition postSearchCondition) {
-        return new BoastPostSearchPagingDto(postRepository.search(postSearchCondition, pageable));
+        return new BoastPostSearchPagingDto(boastPostRepository.search(postSearchCondition, pageable));
     }
 
     @Override
-    public BoastPostGetPagingDto getRecentPostList(Pageable pageable) {
-        return new BoastPostGetPagingDto(postRepository.findAll(pageable));
+    public BoastPostGetPagingDto getRecentPostList() {
+        Member loginMember = memberRepository.findByUsername(SecurityUtil.getLoginUsername())
+                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+
+        List<BriefBoastPostGetInfoDto> briefBoastPostGetInfoDtoList = boastPostRepository.getRecentBoastPost(loginMember).stream()
+                .map(boastPost -> {
+                    int boastPostLikeCount = boastPostRepository.getBoastPostLikeCount(boastPost);
+                    boolean isLike = boastPostRepository.isLikedMember(boastPost, loginMember);
+                    return new BriefBoastPostGetInfoDto(boastPost, boastPostLikeCount, isLike);
+                }).collect(Collectors.toList());
+
+        return new BoastPostGetPagingDto(briefBoastPostGetInfoDtoList);
+    }
+
+    /**
+     * 좋아요 추가 로직 : 좋아요 안 눌린 상태로 요청 시
+     */
+    @Override
+    public void addLike(Long boastPostId) {
+        Member loginMember = memberRepository.findByUsername(SecurityUtil.getLoginUsername())
+                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+
+        BoastPost targetBoastPost = boastPostRepository.findById(boastPostId)
+                .orElseThrow(() -> new BoastPostException(BoastPostExceptionType.POST_NOT_FOUND));
+
+        // 만약, 좋아요가 눌러진 상태에서(좋아요 테이블에 해당 유저, 포스트가 있는 상태) addLiked API를 호출하면 예외 발생
+        boastLikeRepository.findByMemberAndPost(loginMember, targetBoastPost).ifPresent(
+                none -> { throw new BoastLikeException(BoastLikeExceptionType.ALREADY_EXIST_LIKE);
+                });
+
+        // 좋아요 추가(좋아요 테이블에 해당 유저, 포스트 추가)
+        boastLikeRepository.save(BoastLike.builder()
+                .boastPost(targetBoastPost)
+                .member(loginMember)
+                .build());
+    }
+
+    /**
+     * 좋아요 삭제 로직 : 좋아요 눌린 상태로 요청 시
+     */
+    @Override
+    public void deleteLike(Long boastPostId, Long boastLikeId) {
+        Member loginMember = memberRepository.findByUsername(SecurityUtil.getLoginUsername())
+                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+
+        BoastPost targetBoastPost = boastPostRepository.findById(boastPostId)
+                .orElseThrow(() -> new BoastPostException(BoastPostExceptionType.POST_NOT_FOUND));
+
+        // 만약, 좋아요가 안 눌러진 상태에서(좋아요 테이블에 해당 유저, 포스트가 없는 상태) deleteLiked API를 호출하면 예외 발생
+        boastLikeRepository.findByMemberAndPost(loginMember, targetBoastPost).orElseThrow(
+                () -> new BoastLikeException(BoastLikeExceptionType.NOT_FOUND_LIKE));
+
+        // 좋아요 삭제(좋아요 테이블에 해당 유저, 포스트 삭제)
+        boastLikeRepository.deleteById(boastLikeId);
     }
 
 }
