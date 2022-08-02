@@ -1,9 +1,10 @@
-package com.bcdeproject.domain.boast.heart;
+package com.bcdeproject.domain.boast.like;
 
 import com.bcdeproject.domain.BaseTimeEntity;
 import com.bcdeproject.domain.boast.post.BoastPost;
 import com.bcdeproject.domain.member.Member;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,15 +12,15 @@ import javax.persistence.*;
 
 import static javax.persistence.FetchType.LAZY;
 
-@Table(name = "BOAST_HEART")
+@Table(name = "BOAST_LIKE")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class BoastHeart extends BaseTimeEntity {
+public class BoastLike extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "heart_id")
+    @Column(name = "like_id")
     private Long id;
 
     @ManyToOne(fetch = LAZY)
@@ -30,7 +31,6 @@ public class BoastHeart extends BaseTimeEntity {
     @JoinColumn(name = "post_id")
     private BoastPost post;
 
-    @Column(name)
 
     // 연관 관계 편의 메소드
     public void confirmMember(Member member) {
@@ -43,5 +43,10 @@ public class BoastHeart extends BaseTimeEntity {
         post.addBoastHeart(this);
     }
 
+    @Builder
+    public BoastLike(Member member, BoastPost boastPost) {
+        this.member = member;
+        this.post = boastPost;
+    }
 
 }
