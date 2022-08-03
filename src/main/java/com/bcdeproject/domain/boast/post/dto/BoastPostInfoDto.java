@@ -25,6 +25,7 @@ public class BoastPostInfoDto {
         private Long postId; // POST의 ID
         private String title; // 제목
         private String content; // 내용
+        private int likeCount; // 좋아요 개수
         private List<BoastImgUrlDto> imgUrlList = new ArrayList<>(); // 이미지 리스트
         private List<BoastHashTagDto> hashTagList = new ArrayList<>(); // 해시태그 리스트
         private MemberInfoDto boastPostWriterDto; // 작성자에 대한 정보
@@ -36,6 +37,7 @@ public class BoastPostInfoDto {
             this.postId = boastPost.getId();
             this.title = boastPost.getTitle();
             this.content = boastPost.getContent();
+            this.likeCount = boastPost.getLikeCount();
             this.imgUrlList = boastPost.getBoastImgUrlList().stream()
                     .map(boastImgUrl -> new BoastImgUrlDto(boastImgUrl))
                     .collect(Collectors.toList());

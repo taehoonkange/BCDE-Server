@@ -16,15 +16,13 @@ public class BriefBoastPostSearchInfoDto {
 
     private Long postId;
     private String thumbnailImg;
-    private int likeCount;
     private boolean isLike;
 
-    public BriefBoastPostSearchInfoDto(BoastPost post, int likeCount, boolean isLike) {
+    public BriefBoastPostSearchInfoDto(BoastPost post, boolean isLike) {
         this.postId = post.getId();
         // TODO : 프로필 사진 null 안 되게 바꿨을 때 수정하기
         if(post.getBoastImgUrlList().isEmpty()) this.thumbnailImg = null;
         else this.thumbnailImg = post.getBoastImgUrlList().get(0).getImgUrl();
-        this.likeCount = likeCount;
         this.isLike = isLike;
     }
 }
