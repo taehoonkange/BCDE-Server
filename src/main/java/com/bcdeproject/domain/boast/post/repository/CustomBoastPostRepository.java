@@ -17,7 +17,5 @@ public interface CustomBoastPostRepository {
 
     List<BoastPost> getRecentBoastPost(Member member);
 
-    int getBoastPostLikeCount(BoastPost boastPost);
-
     boolean isLikedMember(BoastPost boastPost, Member findMember);
 }

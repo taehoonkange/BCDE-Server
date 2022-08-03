@@ -39,6 +39,7 @@ public class BoastPost extends BaseTimeEntity {
     @Column(length = 500, nullable = false)
     private String content;
 
+    private int likeCount;
 
     // 게시글 삭제 시 달려있는 댓글, 해시태그, 좋아요, 이미지 모두 삭제
     @OneToMany(mappedBy = "post", cascade = ALL, orphanRemoval = true)
@@ -84,10 +85,9 @@ public class BoastPost extends BaseTimeEntity {
         boastImgUrlList.remove(boastImgUrl);
     }
 
-    // 좋아요 개수 반환 메소드
-    public int likeCount() {
-        return boastLikeList.size();
-    }
+    public void addLike() { this.likeCount += 1;}
+
+    public void deleteLike() { this.likeCount -= 1; }
 
     // 내용 수정
     public void updateTitle(String title) {

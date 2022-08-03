@@ -230,8 +230,10 @@ public class BoastPostServiceImpl implements BoastPostService{
                         BoastPost findBoastPost = boastPostRepository.findById(findPostId).orElseThrow(
                                 () -> new BoastPostException(BoastPostExceptionType.POST_NOT_FOUND));
 
-                        int boastPostLikeCount = boastPostRepository.getBoastPostLikeCount(findBoastPost);
-                        boolean isLike = boastPostRepository.isLikedMember(findBoastPost, loginMember);
+                        int boastPostLikeCount = findBoastPost.getLikeCount();
+                        // 좋아요 테이블에서 member, post로 조회 시 행이 있는 경우는 좋아요가 눌린 경우!
+                        // isPresent()로 있으면 true, 없으면 false 반환
+                        boolean isLike = boastLikeRepository.findByMemberAndPost(loginMember, findBoastPost).isPresent();
                         return new BriefBoastPostSearchInfoDto(findBoastPost, boastPostLikeCount, isLike);
                     }).collect(Collectors.toList());
 
@@ -246,8 +248,10 @@ public class BoastPostServiceImpl implements BoastPostService{
 
         List<BriefBoastPostGetInfoDto> briefBoastPostGetInfoDtoList = boastPostRepository.getRecentBoastPost(loginMember).stream()
                 .map(boastPost -> {
-                    int boastPostLikeCount = boastPostRepository.getBoastPostLikeCount(boastPost);
-                    boolean isLike = boastPostRepository.isLikedMember(boastPost, loginMember);
+                    int boastPostLikeCount = boastPost.getLikeCount();
+                    // 좋아요 테이블에서 member, post로 조회 시 행이 있는 경우는 좋아요가 눌린 경우!
+                    // isPresent()로 있으면 true, 없으면 false 반환
+                    boolean isLike = boastLikeRepository.findByMemberAndPost(loginMember, boastPost).isPresent();
                     return new BriefBoastPostGetInfoDto(boastPost, boastPostLikeCount, isLike);
                 }).collect(Collectors.toList());
 
@@ -265,6 +269,9 @@ public class BoastPostServiceImpl implements BoastPostService{
         BoastPost targetBoastPost = boastPostRepository.findById(boastPostId)
                 .orElseThrow(() -> new BoastPostException(BoastPostExceptionType.POST_NOT_FOUND));
 
+        // post 테이블의 likeCount +1
+        targetBoastPost.addLike();
+
         // 만약, 좋아요가 눌러진 상태에서(좋아요 테이블에 해당 유저, 포스트가 있는 상태) addLiked API를 호출하면 예외 발생
         boastLikeRepository.findByMemberAndPost(loginMember, targetBoastPost).ifPresent(
                 none -> { throw new BoastLikeException(BoastLikeExceptionType.ALREADY_EXIST_LIKE);
@@ -272,8 +279,9 @@ public class BoastPostServiceImpl implements BoastPostService{
 
         // 좋아요 추가(좋아요 테이블에 해당 유저, 포스트 추가)
         boastLikeRepository.save(BoastLike.builder()
-                .boastPost(targetBoastPost)
-                .member(loginMember)
+                        .post(targetBoastPost)
+                        .member(loginMember)
+                        .isLike(true)
                 .build());
     }
 
@@ -292,7 +300,8 @@ public class BoastPostServiceImpl implements BoastPostService{
         boastLikeRepository.findByMemberAndPost(loginMember, targetBoastPost).orElseThrow(
                 () -> new BoastLikeException(BoastLikeExceptionType.NOT_FOUND_LIKE));
 
-        // 좋아요 삭제(좋아요 테이블에 해당 유저, 포스트 삭제)
+        // 좋아요 삭제(자랑 게시물 테이블에서 count -1, 좋아요 테이블에 해당 유저, 포스트 삭제)
+        targetBoastPost.deleteLike();
         boastLikeRepository.deleteByPost_IdAndMember_Id(boastPostId, loginMember.getId());
     }
 

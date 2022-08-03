@@ -3,10 +3,7 @@ package com.bcdeproject.domain.boast.like;
 import com.bcdeproject.domain.BaseTimeEntity;
 import com.bcdeproject.domain.boast.post.BoastPost;
 import com.bcdeproject.domain.member.Member;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -15,7 +12,9 @@ import static javax.persistence.FetchType.LAZY;
 @Table(name = "BOAST_LIKE")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Entity
+@Builder
 public class BoastLike extends BaseTimeEntity {
 
     @Id
@@ -30,6 +29,8 @@ public class BoastLike extends BaseTimeEntity {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "post_id")
     private BoastPost post;
+
+    private boolean isLike;
 
 
     // 연관 관계 편의 메소드

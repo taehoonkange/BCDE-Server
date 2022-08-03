@@ -86,19 +86,7 @@ public class CustomBoastPostRepositoryImpl implements CustomBoastPostRepository{
     }
 
 
-    @Override
-    public int getBoastPostLikeCount(BoastPost boastPost) {
-        List<Long> postLikeCount = query.select(boastLike.count())
-                .from(boastLike)
-                .where(
-                        boastLike.post.id.eq(boastPost.getId())
-                )
-                .groupBy(boastLike.post.id)
-                .fetch();
-        int likeCount = postLikeCount.size();
 
-        return likeCount;
-    }
 
     @Override
     public boolean isLikedMember(BoastPost boastPost, Member findMember) {
@@ -106,6 +94,7 @@ public class CustomBoastPostRepositoryImpl implements CustomBoastPostRepository{
         List<Long> memberLikeList = query.select(boastLike.count())
                 .from(boastLike)
                 .where(
+                        // boastLike 테이블에 행이 있으면, isLike = true이므로 좋아요가 눌린 것
                         boastLike.post.id.eq(boastPost.getId()),
                         boastLike.member.id.eq(findMember.getId())
                 )
