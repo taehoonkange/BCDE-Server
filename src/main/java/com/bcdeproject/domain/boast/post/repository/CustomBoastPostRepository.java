@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface CustomBoastPostRepository {
 
-    List<BoastHashTag> searchByHashTag(BoastPostSearchCondition postSearchCondition);
+    List<BoastPost> searchByHashTag(BoastPostSearchCondition postSearchCondition);
 
     List<BoastPost> getRecentBoastPost(Member member);
 
