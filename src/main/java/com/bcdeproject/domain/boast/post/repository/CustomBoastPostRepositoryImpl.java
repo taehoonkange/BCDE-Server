@@ -31,7 +31,6 @@ public class CustomBoastPostRepositoryImpl implements CustomBoastPostRepository{
     public CustomBoastPostRepositoryImpl(EntityManager em) {
         query = new JPAQueryFactory(em);
     }
-
     /**
      * 해시태그 검색 로직
      * 검색 해시태그를 포함하는 HashTag 게시물을 찾아서 Post와 fetchjoin후 최신 날짜부터 정렬해서 Paging
@@ -64,18 +63,6 @@ public class CustomBoastPostRepositoryImpl implements CustomBoastPostRepository{
     }
 
     @Override
-    public List<BoastPost> getMyBoastPost(Member member) {
-
-        List<BoastPost> myBoastPostList = query.selectFrom(boastPost)
-                .where(
-                        boastPost.writer.id.eq(member.getId())
-                )
-                .orderBy(boastPost.createdDate.desc())
-                .fetch();
-        return myBoastPostList;
-    }
-
-    @Override
     public List<BoastPost> getRecentBoastPost(Member member) {
 
         List<BoastPost> recentBoastPostList = query.selectFrom(boastPost)
@@ -85,34 +72,4 @@ public class CustomBoastPostRepositoryImpl implements CustomBoastPostRepository{
         return recentBoastPostList;
     }
 
-
-    @Override
-    public int getBoastPostLikeCount(BoastPost boastPost) {
-        List<Long> postLikeCount = query.select(boastLike.count())
-                .from(boastLike)
-                .where(
-                        boastLike.post.id.eq(boastPost.getId())
-                )
-                .groupBy(boastLike.post.id)
-                .fetch();
-        int likeCount = postLikeCount.size();
-
-        return likeCount;
-    }
-
-    @Override
-    public boolean isLikedMember(BoastPost boastPost, Member findMember) {
-
-        List<Long> memberLikeList = query.select(boastLike.count())
-                .from(boastLike)
-                .where(
-                        boastLike.post.id.eq(boastPost.getId()),
-                        boastLike.member.id.eq(findMember.getId())
-                )
-                .groupBy(boastLike.member.id)
-                .fetch();
-
-        if(memberLikeList.isEmpty()) return false;
-        else return true;
-    }
 }

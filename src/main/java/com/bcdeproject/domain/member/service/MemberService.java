@@ -30,7 +30,9 @@ public interface MemberService {
 
     MemberInfoDto getMyInfo() throws Exception;
 
-    BoastPostGetPagingDto getMytPostList();
+    BoastPostGetPagingDto getMyBoastPostList();
+
+    BoastPostGetPagingDto getMyLikeBoastPostList();
 
 
 }

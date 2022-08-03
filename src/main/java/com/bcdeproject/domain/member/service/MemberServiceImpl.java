@@ -1,5 +1,7 @@
 package com.bcdeproject.domain.member.service;
 
+import com.bcdeproject.domain.boast.like.repository.BoastLikeRepository;
+import com.bcdeproject.domain.boast.post.BoastPost;
 import com.bcdeproject.domain.boast.post.dto.BoastPostGetPagingDto;
 import com.bcdeproject.domain.boast.post.dto.BriefBoastPostGetInfoDto;
 import com.bcdeproject.domain.boast.post.repository.BoastPostRepository;
@@ -34,6 +36,7 @@ public class MemberServiceImpl implements MemberService{
     private final PasswordEncoder passwordEncoder;
     private final S3UploaderService s3UploaderService;
     private final BoastPostRepository boastPostRepository;
+    private final BoastLikeRepository boastLikeRepository;
 
     /**
      * 회원가입 로직
@@ -173,15 +176,38 @@ public class MemberServiceImpl implements MemberService{
      * 내 자랑 게시물 조회 로직
      */
     @Override
-    public BoastPostGetPagingDto getMytPostList() {
+    public BoastPostGetPagingDto getMyBoastPostList() {
         Member loginMember = memberRepository.findByUsername(SecurityUtil.getLoginUsername())
                 .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
-        List<BriefBoastPostGetInfoDto> briefBoastPostGetInfoDtoList = boastPostRepository.getMyBoastPost(loginMember).stream()
+        List<BriefBoastPostGetInfoDto> briefBoastPostGetInfoDtoList = boastPostRepository.findAllByWriterId(loginMember.getId()).stream()
                 .map(boastPost -> {
-                    int boastPostLikeCount = boastPostRepository.getBoastPostLikeCount(boastPost);
-                    boolean isLike = boastPostRepository.isLikedMember(boastPost, loginMember);
+                    int boastPostLikeCount = boastPost.getLikeCount();
+                    // 좋아요 테이블에서 member, post로 조회 시 행이 있는 경우는 좋아요가 눌린 경우!
+                    // isPresent()로 있으면 true, 없으면 false 반환
+                    boolean isLike = boastLikeRepository.findByMemberAndPost(loginMember, boastPost).isPresent();
                     return new BriefBoastPostGetInfoDto(boastPost, boastPostLikeCount, isLike);
+                }).collect(Collectors.toList());
+
+        return new BoastPostGetPagingDto(briefBoastPostGetInfoDtoList);
+    }
+
+    /**
+     * 내가 좋아요 누른 자랑 게시물 조회
+     */
+    @Override
+    public BoastPostGetPagingDto getMyLikeBoastPostList() {
+        Member loginMember = memberRepository.findByUsername(SecurityUtil.getLoginUsername())
+                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+
+        List<BriefBoastPostGetInfoDto> briefBoastPostGetInfoDtoList = boastLikeRepository.findAllByMemberId(loginMember.getId()).stream()
+                .map(boastLike -> {
+                    BoastPost findBoastPost = boastLike.getPost();
+                    int boastPostLikeCount = findBoastPost.getLikeCount();
+                    // 좋아요 테이블에서 member, post로 조회 시 행이 있는 경우는 좋아요가 눌린 경우!
+                    // isPresent()로 있으면 true, 없으면 false 반환
+                    boolean isLike = boastLikeRepository.findByMemberAndPost(loginMember, findBoastPost).isPresent();
+                    return new BriefBoastPostGetInfoDto(findBoastPost, boastPostLikeCount, isLike);
                 }).collect(Collectors.toList());
 
         return new BoastPostGetPagingDto(briefBoastPostGetInfoDtoList);

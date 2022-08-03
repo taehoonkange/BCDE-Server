@@ -13,11 +13,6 @@ public interface CustomBoastPostRepository {
 
     List<BoastHashTag> searchByHashTag(BoastPostSearchCondition postSearchCondition);
 
-    List<BoastPost> getMyBoastPost(Member member);
-
     List<BoastPost> getRecentBoastPost(Member member);
 
-    int getBoastPostLikeCount(BoastPost boastPost);
-
-    boolean isLikedMember(BoastPost boastPost, Member findMember);
 }
