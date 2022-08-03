@@ -1,5 +1,7 @@
 package com.bcdeproject;
 
+import com.bcdeproject.global.profile.controller.ProfileController;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -11,6 +13,7 @@ import java.io.File;
 
 @SpringBootApplication
 @EnableJpaAuditing
+@Slf4j
 public class BcdeprojectApplication {
 
 	@Value("${spring.environment}")
@@ -28,6 +31,7 @@ public class BcdeprojectApplication {
 		new SpringApplicationBuilder(BcdeprojectApplication.class)
 				.properties(APPLICATION_LOCATIONS)
 						.run(args);
+		log.info("배포 Test 1");
 	}
 
 	/**
