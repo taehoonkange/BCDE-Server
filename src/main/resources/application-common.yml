@@ -3,10 +3,9 @@ spring:
   config:
     activate:
       on-profile: "common"
-    servlet:
-      multipart:
-
-        max-file-size: 50MB     #업로드 파일 크기 제한
+  servlet:
+    multipart:
+      max-file-size: 50MB     #업로드 파일 크기 제한
 
 
   mvc:
