@@ -1,6 +1,7 @@
 package com.bcdeproject.domain.member.service;
 
 import com.bcdeproject.domain.boast.like.repository.BoastLikeRepository;
+import com.bcdeproject.domain.boast.post.BoastPost;
 import com.bcdeproject.domain.boast.post.dto.BoastPostGetPagingDto;
 import com.bcdeproject.domain.boast.post.dto.BriefBoastPostGetInfoDto;
 import com.bcdeproject.domain.boast.post.repository.BoastPostRepository;
@@ -179,7 +180,7 @@ public class MemberServiceImpl implements MemberService{
         Member loginMember = memberRepository.findByUsername(SecurityUtil.getLoginUsername())
                 .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
-        List<BriefBoastPostGetInfoDto> briefBoastPostGetInfoDtoList = boastPostRepository.findByWriterId(loginMember.getId()).stream()
+        List<BriefBoastPostGetInfoDto> briefBoastPostGetInfoDtoList = boastPostRepository.findAllByWriterId(loginMember.getId()).stream()
                 .map(boastPost -> {
                     int boastPostLikeCount = boastPost.getLikeCount();
                     // 좋아요 테이블에서 member, post로 조회 시 행이 있는 경우는 좋아요가 눌린 경우!
@@ -199,13 +200,14 @@ public class MemberServiceImpl implements MemberService{
         Member loginMember = memberRepository.findByUsername(SecurityUtil.getLoginUsername())
                 .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
-        List<BriefBoastPostGetInfoDto> briefBoastPostGetInfoDtoList = boastPostRepository.findByWriterId(loginMember.getId()).stream()
-                .map(boastPost -> {
-                    int boastPostLikeCount = boastPost.getLikeCount();
+        List<BriefBoastPostGetInfoDto> briefBoastPostGetInfoDtoList = boastLikeRepository.findAllByMemberId(loginMember.getId()).stream()
+                .map(boastLike -> {
+                    BoastPost findBoastPost = boastLike.getPost();
+                    int boastPostLikeCount = findBoastPost.getLikeCount();
                     // 좋아요 테이블에서 member, post로 조회 시 행이 있는 경우는 좋아요가 눌린 경우!
                     // isPresent()로 있으면 true, 없으면 false 반환
-                    boolean isLike = boastLikeRepository.findByMemberAndPost(loginMember, boastPost).isPresent();
-                    return new BriefBoastPostGetInfoDto(boastPost, boastPostLikeCount, isLike);
+                    boolean isLike = boastLikeRepository.findByMemberAndPost(loginMember, findBoastPost).isPresent();
+                    return new BriefBoastPostGetInfoDto(findBoastPost, boastPostLikeCount, isLike);
                 }).collect(Collectors.toList());
 
         return new BoastPostGetPagingDto(briefBoastPostGetInfoDtoList);
