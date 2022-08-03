@@ -15,10 +15,10 @@ public class BoastReCommentInfoDto {
 
     private Long reCommentId;
     private String content;
-    private boolean isRemoved;
+    private boolean isRemovedReComment;
 
 
-    private MemberInfoDto writerDto;
+    private MemberInfoDto reCommentWriterDto;
 
     public BoastReCommentInfoDto(BoastComment reComment) {
         this.postId = reComment.getPost().getId();
@@ -30,7 +30,7 @@ public class BoastReCommentInfoDto {
             this.content = DEFAULT_DELETE_MESSAGE;
         }
 
-        this.isRemoved = reComment.isRemoved();
-        this.writerDto = new MemberInfoDto(reComment.getWriter());
+        this.isRemovedReComment = reComment.isRemoved();
+        this.reCommentWriterDto = new MemberInfoDto(reComment.getWriter());
     }
 }

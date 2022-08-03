@@ -1,8 +1,7 @@
 package com.bcdeproject.domain.boast.post.controller;
 
+import com.bcdeproject.domain.boast.post.dto.*;
 import com.bcdeproject.global.condition.BoastPostSearchCondition;
-import com.bcdeproject.domain.boast.post.dto.BoastPostSaveDto;
-import com.bcdeproject.domain.boast.post.dto.BoastPostUpdateDto;
 import com.bcdeproject.domain.boast.post.service.BoastPostService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiParam;
@@ -133,6 +132,12 @@ public class BoastPostController {
     /**
      * 좋아요 추가
      */
+    @Operation(summary = "좋아요 추가 API", description = "좋아요 추가 API Example")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "요청 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+            @ApiResponse(responseCode = "500", description = "서버 에러"),
+    })
     @PostMapping("/addLike/{boastPostId}")
     public void addLike(@PathVariable Long boastPostId) {
         boastPostService.addLike(boastPostId);
@@ -141,6 +146,12 @@ public class BoastPostController {
     /**
      * 좋아요 삭제
      */
+    @Operation(summary = "좋아요 삭제 API", description = "좋아요 삭제 API Example")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "요청 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+            @ApiResponse(responseCode = "500", description = "서버 에러"),
+    })
     @PostMapping("/deleteLike/{boastPostId}")
     public void deleteLike(@PathVariable Long boastPostId) {
         boastPostService.deleteLike(boastPostId);
