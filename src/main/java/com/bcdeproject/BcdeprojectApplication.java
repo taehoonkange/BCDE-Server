@@ -31,7 +31,7 @@ public class BcdeprojectApplication {
 		new SpringApplicationBuilder(BcdeprojectApplication.class)
 				.properties(APPLICATION_LOCATIONS)
 						.run(args);
-		log.info("배포 Test 4");
+		log.info("배포 Test 5");
 	}
 
 	/**
