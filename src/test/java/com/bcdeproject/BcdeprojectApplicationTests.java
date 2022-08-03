@@ -19,4 +19,4 @@ class BcdeprojectApplicationTests {
 }
 
 // travis commit & push test 14th
-// 무중단 배포 test6
+// 무중단 배포 test7
