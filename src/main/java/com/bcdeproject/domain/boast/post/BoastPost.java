@@ -7,6 +7,9 @@ import com.bcdeproject.domain.boast.like.BoastLike;
 import com.bcdeproject.domain.boast.imgurl.BoastImgUrl;
 import com.bcdeproject.domain.member.Member;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 
@@ -39,6 +42,7 @@ public class BoastPost extends BaseTimeEntity {
     @Column(length = 500, nullable = false)
     private String content;
 
+    @ColumnDefault("0")
     private int likeCount;
 
     // 게시글 삭제 시 달려있는 댓글, 해시태그, 좋아요, 이미지 모두 삭제

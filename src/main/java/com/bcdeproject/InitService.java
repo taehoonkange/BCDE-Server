@@ -69,7 +69,7 @@
 //                    boastPostRepository.save(post);
 //                }
 //
-//                for(int i = 1; i<=50; i++ ){
+//                for(int i = 1; i<=10; i++ ){
 //                    BoastComment comment = BoastComment.builder().content("댓글" + i).build();
 //                    comment.confirmWriter(memberRepository.findById((long) (i % 3 + 1)).orElse(null));
 //
