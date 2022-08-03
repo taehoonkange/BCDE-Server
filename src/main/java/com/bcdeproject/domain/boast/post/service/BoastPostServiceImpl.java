@@ -220,19 +220,16 @@ public class BoastPostServiceImpl implements BoastPostService{
         Member loginMember = memberRepository.findByUsername(SecurityUtil.getLoginUsername())
                 .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
-        List<BoastHashTag> boastHashTagList = boastPostRepository.searchByHashTag(postSearchCondition);
-        if(boastHashTagList.isEmpty()) {
+        List<BoastPost> boastPosts = boastPostRepository.searchByHashTag(postSearchCondition);
+        if(boastPosts.isEmpty()) {
             throw new BoastPostException(BoastPostExceptionType.SEARCH_HASHTAG_NOT_FOUND);
         } else {
-            List<BriefBoastPostSearchInfoDto> briefBoastPostGetInfoDtoList = boastHashTagList.stream()
-                    .map(boastHashTag -> {
-                        Long findPostId = boastHashTag.getPost().getId();
-                        BoastPost findBoastPost = boastPostRepository.findById(findPostId).orElseThrow(
-                                () -> new BoastPostException(BoastPostExceptionType.POST_NOT_FOUND));
+            List<BriefBoastPostSearchInfoDto> briefBoastPostGetInfoDtoList = boastPosts.stream()
+                    .map(boastPost -> {
                         // 좋아요 테이블에서 member, post로 조회 시 행이 있는 경우는 좋아요가 눌린 경우!
                         // isPresent()로 있으면 true, 없으면 false 반환
-                        boolean isLike = boastLikeRepository.findByMemberAndPost(loginMember, findBoastPost).isPresent();
-                        return new BriefBoastPostSearchInfoDto(findBoastPost, isLike);
+                        boolean isLike = boastLikeRepository.findByMemberAndPost(loginMember, boastPost).isPresent();
+                        return new BriefBoastPostSearchInfoDto(boastPost, isLike);
                     }).collect(Collectors.toList());
 
             return new BoastPostSearchPagingDto(briefBoastPostGetInfoDtoList);

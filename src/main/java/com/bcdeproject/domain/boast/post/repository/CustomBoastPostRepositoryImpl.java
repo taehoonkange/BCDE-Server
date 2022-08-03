@@ -36,20 +36,20 @@ public class CustomBoastPostRepositoryImpl implements CustomBoastPostRepository{
      * 검색 해시태그를 포함하는 HashTag 게시물을 찾아서 Post와 fetchjoin후 최신 날짜부터 정렬해서 Paging
      */
     @Override
-    public List<BoastHashTag> searchByHashTag(BoastPostSearchCondition postSearchCondition) {
+    public List<BoastPost> searchByHashTag(BoastPostSearchCondition postSearchCondition) {
 
-        List<BoastHashTag> hashTagList = query.selectFrom(boastHashTag)
+        List<BoastPost> searchPostList = query.selectFrom(boastPost)
+                .leftJoin(boastPost.boastHashTagList, boastHashTag)
                 .where(
                         // null 이면 조건 무시
                         hashTagHasStr(postSearchCondition.getHashTag()) // boastHashTag.name.contains(hashTag)
                 )
-                .leftJoin(boastHashTag.post, boastPost)
                 .fetchJoin()
                 .orderBy(boastPost.createdDate.desc())//최신 날짜부터
-                .fetch(); //Count 쿼리 발생 X
+                .fetch();//Count 쿼리 발생 X
 
 
-        return hashTagList;
+        return searchPostList;
     }
 
     /**
