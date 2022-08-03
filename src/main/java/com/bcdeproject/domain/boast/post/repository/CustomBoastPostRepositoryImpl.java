@@ -64,18 +64,6 @@ public class CustomBoastPostRepositoryImpl implements CustomBoastPostRepository{
     }
 
     @Override
-    public List<BoastPost> getMyBoastPost(Member member) {
-
-        List<BoastPost> myBoastPostList = query.selectFrom(boastPost)
-                .where(
-                        boastPost.writer.id.eq(member.getId())
-                )
-                .orderBy(boastPost.createdDate.desc())
-                .fetch();
-        return myBoastPostList;
-    }
-
-    @Override
     public List<BoastPost> getRecentBoastPost(Member member) {
 
         List<BoastPost> recentBoastPostList = query.selectFrom(boastPost)
@@ -85,23 +73,4 @@ public class CustomBoastPostRepositoryImpl implements CustomBoastPostRepository{
         return recentBoastPostList;
     }
 
-
-
-
-    @Override
-    public boolean isLikedMember(BoastPost boastPost, Member findMember) {
-
-        List<Long> memberLikeList = query.select(boastLike.count())
-                .from(boastLike)
-                .where(
-                        // boastLike 테이블에 행이 있으면, isLike = true이므로 좋아요가 눌린 것
-                        boastLike.post.id.eq(boastPost.getId()),
-                        boastLike.member.id.eq(findMember.getId())
-                )
-                .groupBy(boastLike.member.id)
-                .fetch();
-
-        if(memberLikeList.isEmpty()) return false;
-        else return true;
-    }
 }
