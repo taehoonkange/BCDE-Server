@@ -182,11 +182,10 @@ public class MemberServiceImpl implements MemberService{
 
         List<BriefBoastPostGetInfoDto> briefBoastPostGetInfoDtoList = boastPostRepository.findAllByWriterId(loginMember.getId()).stream()
                 .map(boastPost -> {
-                    int boastPostLikeCount = boastPost.getLikeCount();
                     // 좋아요 테이블에서 member, post로 조회 시 행이 있는 경우는 좋아요가 눌린 경우!
                     // isPresent()로 있으면 true, 없으면 false 반환
                     boolean isLike = boastLikeRepository.findByMemberAndPost(loginMember, boastPost).isPresent();
-                    return new BriefBoastPostGetInfoDto(boastPost, boastPostLikeCount, isLike);
+                    return new BriefBoastPostGetInfoDto(boastPost, isLike);
                 }).collect(Collectors.toList());
 
         return new BoastPostGetPagingDto(briefBoastPostGetInfoDtoList);
@@ -203,11 +202,10 @@ public class MemberServiceImpl implements MemberService{
         List<BriefBoastPostGetInfoDto> briefBoastPostGetInfoDtoList = boastLikeRepository.findAllByMemberId(loginMember.getId()).stream()
                 .map(boastLike -> {
                     BoastPost findBoastPost = boastLike.getPost();
-                    int boastPostLikeCount = findBoastPost.getLikeCount();
                     // 좋아요 테이블에서 member, post로 조회 시 행이 있는 경우는 좋아요가 눌린 경우!
                     // isPresent()로 있으면 true, 없으면 false 반환
                     boolean isLike = boastLikeRepository.findByMemberAndPost(loginMember, findBoastPost).isPresent();
-                    return new BriefBoastPostGetInfoDto(findBoastPost, boastPostLikeCount, isLike);
+                    return new BriefBoastPostGetInfoDto(findBoastPost, isLike);
                 }).collect(Collectors.toList());
 
         return new BoastPostGetPagingDto(briefBoastPostGetInfoDtoList);
