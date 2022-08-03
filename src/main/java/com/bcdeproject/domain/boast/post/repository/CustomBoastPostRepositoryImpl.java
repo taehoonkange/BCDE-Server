@@ -46,6 +46,7 @@ public class CustomBoastPostRepositoryImpl implements CustomBoastPostRepository{
                 )
                 .fetchJoin()
                 .orderBy(boastPost.createdDate.desc())//최신 날짜부터
+                .distinct()
                 .fetch();//Count 쿼리 발생 X
 
 
