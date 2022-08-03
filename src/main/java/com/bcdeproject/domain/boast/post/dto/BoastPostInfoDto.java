@@ -27,7 +27,7 @@ public class BoastPostInfoDto {
         private String content; // 내용
         private List<BoastImgUrlDto> imgUrlList = new ArrayList<>(); // 이미지 리스트
         private List<BoastHashTagDto> hashTagList = new ArrayList<>(); // 해시태그 리스트
-        private MemberInfoDto writerDto; // 작성자에 대한 정보
+        private MemberInfoDto boastPostWriterDto; // 작성자에 대한 정보
         private LocalDateTime createdDate; // 작성 시간
         private LocalDateTime lastModifiedDate; // 마지막 수정 시간
         private List<BoastCommentInfoDto> commentInfoDtoList;
@@ -42,7 +42,7 @@ public class BoastPostInfoDto {
             this.hashTagList = boastPost.getBoastHashTagList().stream()
                     .map(boastHashTag -> new BoastHashTagDto(boastHashTag))
                     .collect(Collectors.toList());
-            this.writerDto = new MemberInfoDto(boastPost.getWriter());
+            this.boastPostWriterDto = new MemberInfoDto(boastPost.getWriter());
             this.createdDate = boastPost.getCreatedDate();
             this.lastModifiedDate = boastPost.getLastModifiedDate();
 

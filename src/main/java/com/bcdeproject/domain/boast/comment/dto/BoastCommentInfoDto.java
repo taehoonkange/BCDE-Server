@@ -17,12 +17,12 @@ public class BoastCommentInfoDto {
 
     private Long commentId;//해당 댓글의 ID
     private String content;//내용 (삭제되었다면 "삭제된 댓글입니다 출력")
-    private boolean isRemoved;//삭제되었는지?
+    private boolean isRemovedComment;//삭제되었는지?
 
 
-    private MemberInfoDto writerDto;//댓글 작성자에 대한 정보
+    private MemberInfoDto commentWriterDto;//댓글 작성자에 대한 정보
 
-    private List<BoastReCommentInfoDto> reCommentListDtoList;//대댓글에 대한 정보들
+    private List<BoastReCommentInfoDto> reCommentDtoList;//대댓글에 대한 정보들
 
 
     /**
@@ -41,13 +41,13 @@ public class BoastCommentInfoDto {
             this.content = DEFAULT_DELETE_MESSAGE;
         }
 
-        this.isRemoved = comment.isRemoved();
+        this.isRemovedComment = comment.isRemoved();
 
 
 
-        this.writerDto = new MemberInfoDto(comment.getWriter());
+        this.commentWriterDto = new MemberInfoDto(comment.getWriter());
 
-        this.reCommentListDtoList = reCommentList.stream().map(BoastReCommentInfoDto::new).collect(Collectors.toList());
+        this.reCommentDtoList = reCommentList.stream().map(BoastReCommentInfoDto::new).collect(Collectors.toList());
 
     }
 }
