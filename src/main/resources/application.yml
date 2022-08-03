@@ -43,8 +43,7 @@ spring:
 ---
 # 배포 환경
 spring:
-  # test위해 local로 (폴더 생성)
-  environment: "local"
+  environment: "development"
   config:
     activate:
       on-profile: "development"
