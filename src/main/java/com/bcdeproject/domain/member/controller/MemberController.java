@@ -149,9 +149,26 @@ public class MemberController {
             @ApiResponse(responseCode = "500", description = "서버 에러"),
     })
     @GetMapping("/member/myBoastPost")
-    public ResponseEntity getMyBoastPostInfo() throws Exception {
-        BoastPostGetPagingDto mytPostList = memberService.getMytPostList();
-        return new ResponseEntity(mytPostList, HttpStatus.OK);
+    public ResponseEntity getMyBoastBoastPostInfo() throws Exception {
+        BoastPostGetPagingDto myBoastPostList = memberService.getMyBoastPostList();
+        return new ResponseEntity(myBoastPostList, HttpStatus.OK);
+    }
+
+    /**
+     * 내가 좋아요 누른 자랑 게시물 조회
+     */
+    @Operation(summary = "내가 좋아요 누른 자랑 게시물 조회 API", description = "내가 좋아요 누른 자랑 게시물 조회 API Example")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "요청 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청입니다."),
+            @ApiResponse(responseCode = "403", description = "인증되지 않은 회원입니다"),
+            @ApiResponse(responseCode = "404", description = "회원을 찾을 수 없습니다."),
+            @ApiResponse(responseCode = "500", description = "서버 에러"),
+    })
+    @GetMapping("/member/myBoastPost/myLike")
+    public ResponseEntity getMyLikeBoastBoastPostInfo() throws Exception {
+        BoastPostGetPagingDto myLikeBoastPostList = memberService.getMyLikeBoastPostList();
+        return new ResponseEntity(myLikeBoastPostList, HttpStatus.OK);
     }
 
 }

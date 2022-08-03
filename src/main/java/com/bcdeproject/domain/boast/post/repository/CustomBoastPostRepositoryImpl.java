@@ -31,7 +31,6 @@ public class CustomBoastPostRepositoryImpl implements CustomBoastPostRepository{
     public CustomBoastPostRepositoryImpl(EntityManager em) {
         query = new JPAQueryFactory(em);
     }
-
     /**
      * 해시태그 검색 로직
      * 검색 해시태그를 포함하는 HashTag 게시물을 찾아서 Post와 fetchjoin후 최신 날짜부터 정렬해서 Paging
